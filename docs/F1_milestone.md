@@ -1,68 +1,103 @@
 ---
-title: "F1 里程碑：2D MoM 正演器 + Mie 解析验证（已通过）"
+title: "F1 milestone: 2D MoM forward solver + Mie analytic validation (passed)"
 tags: [MWI, milestone, F1, MoM, Mie, build-journal]
-status: ✅ done
+status: done
 date: 2026-06-10
-related: "[[F1_Tutorial_2D-MoM正演与Mie验证]]"
+related: "F1_Tutorial_2D-MoM-and-Mie-validation.md"
 ---
 
-# F1 里程碑：第一个解析验证过的 2D MWI 正演器
+# F1 milestone: the first analytically validated 2D MWI forward solver
 
-> **一句话**：从零写出一个 2D TM 微波散射正演器（Richmond MoM / Lippmann–Schwinger），并用 Mie 级数解析解严格验证——逐点误差 3.15%、收敛曲线单调下降、`pytest 7/7`。这是整个 MWI 项目的地基。
+> **In one line:** built a 2D TM microwave scattering forward solver (Richmond MoM /
+> Lippmann–Schwinger) from scratch and validated it rigorously against the analytic
+> Mie series — 3.15% pointwise error, monotone convergence, `pytest 7/7`. This is the
+> foundation for the whole MWI project.
 
-## 1. 做了什么
+## 1. What was built
 
-实现了一条完整的"正演 + 验证"流水线（`mwisim/`）：
+A complete "forward + validation" pipeline (`mwisim/`):
 
-| 模块 | 函数 | 干什么 |
+| Module | Functions | Purpose |
 |---|---|---|
-| `grid.py` | `make_grid`, `assign_contrast` | 方形域中点网格 + 对比度 $\chi$ |
-| `green.py` | `green_2d` | 2D 自由空间 Green 函数 $\frac{1}{4j}H_0^{(2)}(k_bR)$ |
-| `mom.py` | `build_D`, `incident_plane_wave`, `solve_total_field`, `scattered_field` | Richmond MoM 离散、平面波激励、解 $(\mathbf I-\mathbf D)\mathbf E=\mathbf E_{inc}$、算接收散射场 |
-| `mie.py` | `mie_an`, `mie_scattered` | 介质圆柱散射的解析级数（真值） |
-| `metrics.py` | `rel_l2_error`, `convergence_study` | 误差度量 + 网格加密研究 |
+| `grid.py` | `make_grid`, `assign_contrast` | square-domain midpoint grid + contrast $\chi$ |
+| `green.py` | `green_2d` | 2D free-space Green's function $\frac{1}{4j}H_0^{(2)}(k_bR)$ |
+| `mom.py` | `build_D`, `incident_plane_wave`, `solve_total_field`, `scattered_field` | Richmond MoM discretization, plane-wave excitation, solve $(\mathbf I-\mathbf D)\mathbf E=\mathbf E_{inc}$, scattered field at receivers |
+| `mie.py` | `mie_an`, `mie_scattered` | analytic series for a dielectric cylinder (ground truth) |
+| `metrics.py` | `rel_l2_error`, `convergence_study` | error metric + grid-refinement study |
 
-物理设定：平面波 $e^{-jk_bx}$ 照射介质圆柱（$\varepsilon_r=2\sim8$），$e^{j\omega t}$/$H^{(2)}$ 约定全程一致。
+Physical setup: a plane wave $e^{-jk_bx}$ illuminates a dielectric cylinder
+($\varepsilon_r=2\sim8$); the $e^{j\omega t}$/$H^{(2)}$ convention is used consistently
+throughout.
 
-## 2. 验证结果
+## 2. Validation results
 
-- **逐点对比**（`fig_pointwise.png`）：接收圈上 MoM（点）压在 Mie（线）上，实部虚部都吻合，相对 $L_2$ 误差 **3.15%**（弱散射 / `npl=15`）。
-- **收敛曲线**（`fig_convergence.png`）：误差随"每波长格数"单调下降，log-log 斜率 $\approx1\sim2$——证明剩余误差是离散化、随加密消失，不是 bug。
-- **测试**：`pytest -q` → **7 passed**，覆盖弱散射 sanity（T4）、Mie 自收敛（T5）、MoM-vs-Mie 弱/强散射（T6 $\varepsilon_r=2$ / T8 $\varepsilon_r=8$）。
+- **Pointwise** (`fig_pointwise.png`): on the receiver ring the MoM (dots) sits on
+  the Mie (line), matching in both real and imaginary parts, relative $L_2$ error
+  **3.15%** (weak scattering, `npl=15`).
+- **Convergence** (`fig_convergence.png`): error decreases monotonically with
+  cells-per-wavelength, log-log slope $\approx 1\sim2$ — proving the residual error is
+  discretization that vanishes under refinement, not a bug.
+- **Tests**: `pytest -q` → **7 passed**, covering weak-scatter sanity (T4), Mie
+  self-convergence (T5), and MoM-vs-Mie at weak/strong contrast (T6 $\varepsilon_r=2$ /
+  T8 $\varepsilon_r=8$).
 
-## 3. Debug 战记：self-cell 漏项（AI 错了，物理对了）
+## 3. Debug war story: the missing self-cell term (the AI was wrong, the physics was right)
 
-> 这一段值得单独记，因为它是这次最有价值的教训。
+> Worth recording separately — the most valuable lesson of this stage.
 
-**症状**：弱散射全过，但 $\varepsilon_r=2/8$ 时 MoM 和 Mie 对不上，误差 ~0.8–1.1。
+**Symptom**: weak scattering passed, but at $\varepsilon_r=2/8$ the MoM and Mie
+disagreed by ~0.8–1.1 relative error.
 
-**定位三板斧**：
-1. **不是约定问题**——试了共轭/反号/复缩放,全更差,排除了"$H^{(2)}\leftrightarrow H^{(1)}$ 翻转"这类全局错误。
-2. **加密网格,误差卡在 0.80 不降**——说明 MoM 自洽收敛到一个*稳定的错答案*,问题在公式而非分辨率。
-3. **弱散射极限三方对照**(MoM / Mie / **Born**)——$\varepsilon_r\to1.01$ 时三者全一致(误差 1.6–1.9%)。这把 bug 锁死在"只在强散射现身"的地方 = **对角线 self 项**(它只在多次散射主导时起作用)。
+**Triangulation, three moves**:
+1. **Not a convention issue** — conjugate / sign-flip / complex-scale all made it
+   worse, ruling out a global "$H^{(2)}\leftrightarrow H^{(1)}$" type error.
+2. **Refining the grid left the error stuck at 0.80** — so the MoM converged
+   self-consistently to a *stable wrong answer*; the bug was in a formula, not the
+   resolution.
+3. **Weak-limit three-way comparison** (MoM / Mie / **Born**) — at
+   $\varepsilon_r\to1.01$ all three agreed (1.6–1.9% error). That pinned the bug to
+   something that only shows under strong scattering = the **diagonal self term**
+   (it only matters when multiple scattering dominates).
 
-**根因**：self-cell 积分 $\int_0^a uH_0^{(2)}(k_bu)\,du=\big[uH_1^{(2)}(u)\big]_0^{k_ba}$ 的**下限**被当成 0 漏掉了。其实 $\lim_{u\to0}uH_1^{(2)}(u)=\frac{2j}{\pi}\neq0$（$Y_1$ 在原点发散）。补回后正确自项是
+**Root cause**: the self-cell integral
+$\int_0^a uH_0^{(2)}(k_bu)\,du=\big[uH_1^{(2)}(u)\big]_0^{k_ba}$ had its **lower limit**
+treated as 0. In fact $\lim_{u\to0}uH_1^{(2)}(u)=\frac{2j}{\pi}\neq0$ (because $Y_1$
+diverges at the origin). Restored, the correct self term is
 
-$$D_{nn}=-\chi_n\Big[\tfrac{j\pi k_ba}{2}H_1^{(2)}(k_ba)+\underbrace{1}_{\text{漏了的项}}\Big]$$
+$$D_{nn}=-\chi_n\Big[\tfrac{j\pi k_ba}{2}H_1^{(2)}(k_ba)+\underbrace{1}_{\text{the missing term}}\Big]$$
 
-代码修复就一处：`np.fill_diagonal(D, pref*hankel2(1,k_b*a) - 1)`。改完 **7/7 全绿**。
+The fix is a single line: `np.fill_diagonal(D, pref*hankel2(1,k_b*a) - 1)`. After that,
+**7/7 green**.
 
-**为什么弱散射看不出**：弱散射时 $\mathbf D$ 整体很小,$(\mathbf I-\mathbf D)\approx\mathbf I$,对角线那点误差被淹没;强散射时多次散射放大它 → 反演崩。
+**Why it was invisible in the weak limit**: there $\mathbf D$ is tiny, so
+$(\mathbf I-\mathbf D)\approx\mathbf I$ and the diagonal error is negligible; under
+strong scattering multiple scattering amplifies it and the reconstruction breaks.
 
-## 4. 经验教训（可迁移）
+## 4. Transferable lessons
 
-1. **金标准必须独立、且先做对**。坚持"先把 Mie 验到自收敛、再拿它验 MoM",否则两个都错根本发现不了。
-2. **弱极限三方对照是定位 bug 的杀手锏**。Born 近似无歧义,用它当第三方裁判,一步排除"全局约定错"vs"局部公式错"。
-3. **收敛曲线不只是成果图,也是诊断仪**。误差"卡住不降"立刻指向公式 bug,而非分辨率不足。
-4. **2D MoM 的 self-cell 下限奇异项是经典坑**（$Y_1$ 原点发散）。这个直觉对将来写 3D Green、写迭代求解器预条件都用得上。
-5. **AI 给的公式也要验**。这次正是 tutorial 公式漏项,靠物理诊断抓出来——"AI 写代码,人验物理"。
+1. **The gold standard must be independent and made correct first.** Insisting on
+   "validate Mie to self-convergence first, then use it to validate MoM" is the only
+   reason the bug was catchable — if both were wrong you'd never know.
+2. **Weak-limit three-way comparison is the killer diagnostic.** The Born
+   approximation is unambiguous; using it as a third referee instantly separates
+   "global convention error" from "local formula error".
+3. **The convergence curve is a diagnostic, not just a result figure.** Error
+   "stuck, not decreasing" points straight at a formula bug rather than insufficient
+   resolution.
+4. **The 2D MoM self-cell lower-limit singularity ($Y_1$ at the origin) is a classic
+   trap.** The intuition transfers to 3D Green's functions and iterative-solver
+   preconditioners.
+5. **Verify AI-provided formulas too.** Here it was the tutorial formula that dropped
+   a term, caught by physical diagnostics — "the AI writes the code, the human checks
+   the physics."
 
-## 5. 下一步
+## 5. Next steps
 
-- **F2**：CG-FFT 加速（matrix-free + Toeplitz-FFT），为大规模 / 3D 铺路，且 FFT 核与 Zenith-Radar 合流。
-- **I1–I4**：反演（Born → BIM/DBIM → CGLS/LSQR → PnP-DBIM）——从"正演"迈到"成像"。
-- **F3**：UWCEM 体模 + Cole-Cole 多频，贴近真实组织。
+- **F2**: CG-FFT acceleration (matrix-free + Toeplitz FFT), paving the way for large /
+  3D problems, with the FFT core converging with Zenith-Radar.
+- **I1–I4**: inversion (Born → BIM/DBIM → CGLS/LSQR → PnP-DBIM) — from forward to imaging.
+- **F3**: UWCEM phantom + Cole-Cole multi-frequency, closer to real tissue.
 
 ---
 
-*F1 closed 2026-06-10 · 从"稀里糊涂"到"解析验证过的正演器" · 每个 bug 都记下来了。*
+*F1 closed 2026-06-10 · from "muddling through" to "an analytically validated forward solver" · every bug logged.*

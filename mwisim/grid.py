@@ -56,6 +56,6 @@ def assign_contrast(
 
     TODO (F1 §1): radial test on centers, fill complex array.
     """
-    r = np.hypot(centers[:, 0], centers[:, 1])       # (N,) 每格到原点距离
+    r = np.hypot(centers[:, 0], centers[:, 1])       # (N,) distance of each cell to the origin
     chi = np.where(r <= R_cyl, eps_r / eps_b - 1, 0.0)
     return chi.astype(complex)

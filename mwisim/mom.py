@@ -92,6 +92,6 @@ def scattered_field(
     """
     pref = k_b**2 * dS
     rho = np.sqrt(((rx_points[:, None, :] - centers[None, :, :])**2).sum(axis=-1))
-    G = (1 / 4j) * hankel2(0, k_b * rho)   # rx 在圆柱外, rho>0, 无 self-cell
+    G = (1 / 4j) * hankel2(0, k_b * rho)   # rx outside cylinder => rho>0, no self-cell
     E_sc = pref * (G @ (chi * E_tot))
     return E_sc

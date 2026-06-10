@@ -29,3 +29,6 @@ docs/*.png
 phantoms/*.h5
 phantoms/*.mat
 phantoms/data/
+
+# pytest temp cache
+pytest-cache-files-*/

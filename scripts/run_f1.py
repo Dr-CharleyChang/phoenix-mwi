@@ -41,34 +41,15 @@ P = dict(
 
 
 def _derived(P):
-    # 定义一个函数：输入参数字典 P，计算并返回一组“派生量”（由基础参数推出来的量）
-
-    lam0 = C0 / P["f"]
-    # 自由空间波长 λ0 = c0 / f，其中 C0 是光速常量，P["f"] 是频率（Hz）
-
-    k_b = 2 * np.pi / lam0 * np.sqrt(P["eps_b"])
-    # 背景介质（b=background）的波数 k_b = k0 * sqrt(eps_b)，其中 k0=2π/λ0
-    # 这里默认非磁性（μr=1），eps_b 是背景相对介电常数
-
-    k_1 = 2 * np.pi / lam0 * np.sqrt(P["eps_r"])
-    # 圆柱介质（1=inside cylinder）的波数 k_1 = k0 * sqrt(eps_r)
-    # eps_r 是圆柱的相对介电常数（可能是实数或复数）
-
-    R_cyl = P["R_cyl"] or 0.5 * lam0
-    # 圆柱半径 R_cyl：如果 P["R_cyl"] 提供了（且为“真值”），就用它；
-    # 否则用默认值 0.5*λ0。这里用 `or` 实现“未指定就用默认值”。
-
-    R_obs = P["R_obs"] or 3 * R_cyl
-    # 观测圆环半径 R_obs：如果 P["R_obs"] 提供了就用它；
-    # 否则默认取 3*R_cyl（让接收点在圆柱外一定距离）
-
+    # Given the parameter dict P, compute and return the derived quantities.
+    lam0 = C0 / P["f"]                                  # free-space wavelength lambda0 = c0 / f
+    k_b = 2 * np.pi / lam0 * np.sqrt(P["eps_b"])        # background wavenumber (non-magnetic, mu_r=1)
+    k_1 = 2 * np.pi / lam0 * np.sqrt(P["eps_r"])        # in-cylinder wavenumber
+    R_cyl = P["R_cyl"] or 0.5 * lam0                    # cylinder radius (default 0.5*lambda0 if not given)
+    R_obs = P["R_obs"] or 3 * R_cyl                     # observation-ring radius (default 3*R_cyl, outside cylinder)
+    # in-medium wavelength; use Re(eps_r) for complex eps_r so the grid resolution is set sensibly
     lam1 = lam0 / np.sqrt(P["eps_r"].real if hasattr(P["eps_r"], "real") else P["eps_r"])
-    # 介质内波长 λ1 = λ0 / sqrt(eps_r)
-    # 若 eps_r 是复数/带 .real 属性，则取其实部 eps_r.real 来算“有效波长”（便于设定网格分辨率）；
-    # 否则直接用 eps_r（通常为普通实数）
-
     return lam0, lam1, k_b, k_1, R_cyl, R_obs
-    # 返回这些派生量，供后续计算（网格尺度、入射/散射计算、接收环位置等）使用
 
 
 def rx_ring(R_obs, N_rx):
@@ -117,7 +98,7 @@ def run_convergence(P, d_list_per_lambda=(8, 10, 15, 20, 30)):
     params = dict(
         f=P["f"], eps_r=P["eps_r"], eps_b=P["eps_b"],
         R_cyl=R_cyl, R_obs=R_obs, N_rx=P["N_rx"],
-        domain_size=P["domain_factor"] * 2 * R_cyl,   # 真实边长，对齐 convergence_study 的键
+        domain_size=P["domain_factor"] * 2 * R_cyl,   # actual side length; matches convergence_study keys
     )
     n_per_lambda, errs = convergence_study(d_list, params)
 

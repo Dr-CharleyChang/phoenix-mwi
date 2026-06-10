@@ -3,7 +3,7 @@
 These are RED until you implement the stubs in mwisim/. Make them green one by
 one — that is your F1 progress bar. Run:  pytest -q
 
-Maps to docs/F1 tutorial §11 (自测清单).
+Maps to docs/F1 tutorial §11 (self-test checklist).
 """
 from __future__ import annotations
 

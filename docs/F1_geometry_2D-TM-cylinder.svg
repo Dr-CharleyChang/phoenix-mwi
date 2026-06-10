@@ -1,6 +1,6 @@
 <svg viewBox="0 0 800 440" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system, Segoe UI, Roboto, sans-serif">
-  <title>2D TM 圆柱散射的几何关系</title>
-  <desc>左：3D 中无限长圆柱沿 z 轴，E 场沿 z，平面波沿 x 传播。右：xy 平面截面，圆为圆柱截面，平面波从左入射，虚线为观测圈，极坐标 rho、phi 用于 Mie。</desc>
+  <title>Geometry of 2D TM cylinder scattering</title>
+  <desc>Left: in 3D, an infinite cylinder along z, E field along z, plane wave propagating along x. Right: xy-plane cross-section, the circle is the cylinder cross-section, plane wave incident from the left, dashed observation ring, polar coordinates rho and phi used for Mie.</desc>
 
   <rect x="0" y="0" width="800" height="440" fill="#ffffff"/>
 
@@ -11,33 +11,33 @@
   </defs>
 
   <!-- ===================== Panel A: 3D ===================== -->
-  <text x="200" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">3D 真实场景：无限长圆柱</text>
+  <text x="200" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">3D reality: infinite cylinder</text>
 
   <rect x="150" y="95" width="100" height="250" fill="#cfe3f7" stroke="none"/>
   <ellipse cx="200" cy="345" rx="50" ry="16" fill="#cfe3f7" stroke="#3b7dd8" stroke-width="1.5"/>
   <line x1="150" y1="95" x2="150" y2="345" stroke="#3b7dd8" stroke-width="1.5"/>
   <line x1="250" y1="95" x2="250" y2="345" stroke="#3b7dd8" stroke-width="1.5"/>
   <ellipse cx="200" cy="95" rx="50" ry="16" fill="#eaf3fc" stroke="#3b7dd8" stroke-width="1.5"/>
-  <text x="262" y="220" font-size="12.5" fill="#666666">圆柱(ε_r)</text>
-  <text x="150" y="372" text-anchor="middle" font-size="11.5" fill="#666666">截面 = 圆</text>
+  <text x="262" y="220" font-size="12.5" fill="#666666">cylinder (e_r)</text>
+  <text x="150" y="372" text-anchor="middle" font-size="11.5" fill="#666666">cross-section = circle</text>
 
   <line x1="200" y1="370" x2="200" y2="55" stroke="#3b7dd8" stroke-width="2.2" marker-end="url(#arrB)"/>
   <text x="208" y="62" font-size="14" font-weight="700" fill="#3b7dd8">z</text>
-  <text x="210" y="80" font-size="11.5" fill="#3b7dd8">轴 ‖ E</text>
+  <text x="210" y="80" font-size="11.5" fill="#3b7dd8">axis || E</text>
 
   <line x1="120" y1="250" x2="120" y2="170" stroke="#3b7dd8" stroke-width="2" marker-start="url(#arrB)" marker-end="url(#arrB)"/>
   <text x="92" y="215" font-size="14" font-weight="700" fill="#3b7dd8">E</text>
 
   <line x1="255" y1="270" x2="350" y2="270" stroke="#e08a2b" stroke-width="2.4" marker-end="url(#arrO)"/>
   <text x="320" y="262" font-size="14" font-weight="700" fill="#e08a2b">k</text>
-  <text x="285" y="290" font-size="11.5" fill="#e08a2b">传播 (+x)</text>
+  <text x="285" y="290" font-size="11.5" fill="#e08a2b">propagation (+x)</text>
 
-  <text x="200" y="408" text-anchor="middle" font-size="12" fill="#666666">沿 z 无变化 → 问题塌成 2D</text>
+  <text x="200" y="408" text-anchor="middle" font-size="12" fill="#666666">no variation along z =&gt; collapses to 2D</text>
 
   <line x1="400" y1="60" x2="400" y2="400" stroke="#dddddd" stroke-width="1" stroke-dasharray="3 4"/>
 
   <!-- ===================== Panel B: 2D cross-section ===================== -->
-  <text x="600" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">2D 截面：xy 平面（沿 z 俯视）</text>
+  <text x="600" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a1a">2D cross-section: xy-plane (top view)</text>
 
   <line x1="600" y1="240" x2="740" y2="240" stroke="#888888" stroke-width="1.3" marker-end="url(#arrK)"/>
   <text x="744" y="244" font-size="13" font-weight="700" fill="#555555">x</text>
@@ -50,16 +50,16 @@
     <circle cx="700" cy="240" r="3"/><circle cx="650" cy="153" r="3"/><circle cx="550" cy="153" r="3"/>
     <circle cx="500" cy="240" r="3"/><circle cx="550" cy="327" r="3"/><circle cx="650" cy="327" r="3"/>
   </g>
-  <text x="612" y="350" font-size="11.5" fill="#999999">观测圈 R_obs</text>
+  <text x="612" y="350" font-size="11.5" fill="#999999">observation ring R_obs</text>
 
   <circle cx="600" cy="240" r="52" fill="#cfe3f7" stroke="#3b7dd8" stroke-width="1.8"/>
-  <text x="600" y="236" text-anchor="middle" font-size="12.5" font-weight="700" fill="#2a5a92">ε_r</text>
-  <text x="600" y="252" text-anchor="middle" font-size="10.5" fill="#2a5a92">χ≠0</text>
-  <text x="690" y="200" font-size="11" fill="#777777">外 χ=0 (ε_b)</text>
+  <text x="600" y="236" text-anchor="middle" font-size="12.5" font-weight="700" fill="#2a5a92">e_r</text>
+  <text x="600" y="252" text-anchor="middle" font-size="10.5" fill="#2a5a92">chi!=0</text>
+  <text x="690" y="200" font-size="11" fill="#777777">outside chi=0 (e_b)</text>
 
   <circle cx="600" cy="240" r="3.2" fill="#3b7dd8"/>
   <circle cx="600" cy="240" r="7" fill="none" stroke="#3b7dd8" stroke-width="1.2"/>
-  <text x="608" y="226" font-size="11.5" font-weight="700" fill="#3b7dd8">E⊙ (出纸面, 沿 z)</text>
+  <text x="608" y="226" font-size="11.5" font-weight="700" fill="#3b7dd8">E (out of page, along z)</text>
 
   <g stroke="#e08a2b" stroke-width="1.6">
     <line x1="452" y1="150" x2="452" y2="330"/>
@@ -67,19 +67,19 @@
     <line x1="484" y1="160" x2="484" y2="320"/>
   </g>
   <line x1="450" y1="115" x2="500" y2="115" stroke="#e08a2b" stroke-width="2.2" marker-end="url(#arrO)"/>
-  <text x="450" y="106" font-size="11.5" font-weight="700" fill="#e08a2b">平面波 → +x</text>
-  <text x="430" y="350" font-size="11" fill="#e08a2b">E_inc = E₀ e^(−j k_b x)</text>
+  <text x="450" y="106" font-size="11.5" font-weight="700" fill="#e08a2b">plane wave -&gt; +x</text>
+  <text x="430" y="350" font-size="11" fill="#e08a2b">E_inc = E0 e^(-j k_b x)</text>
 
   <line x1="600" y1="240" x2="671" y2="170" stroke="#c0392b" stroke-width="1.6"/>
   <circle cx="671" cy="170" r="3" fill="#c0392b"/>
-  <text x="640" y="195" font-size="13" font-style="italic" font-weight="700" fill="#c0392b">ρ</text>
+  <text x="640" y="195" font-size="13" font-style="italic" font-weight="700" fill="#c0392b">rho</text>
   <path d="M 636 240 A 36 36 0 0 0 625 215" fill="none" stroke="#c0392b" stroke-width="1.4"/>
-  <text x="643" y="226" font-size="13" font-style="italic" font-weight="700" fill="#c0392b">φ</text>
-  <text x="600" y="405" text-anchor="middle" font-size="12" fill="#666666">Mie 用极坐标 (ρ, φ)，原点 = 圆柱中心</text>
+  <text x="643" y="226" font-size="13" font-style="italic" font-weight="700" fill="#c0392b">phi</text>
+  <text x="600" y="405" text-anchor="middle" font-size="12" fill="#666666">Mie uses polar (rho, phi), origin = cylinder center</text>
 
   <g font-size="11.5">
-    <circle cx="470" cy="40" r="5" fill="#3b7dd8"/><text x="480" y="44" fill="#555555">E 场 (沿 z)</text>
-    <circle cx="560" cy="40" r="5" fill="#e08a2b"/><text x="570" y="44" fill="#555555">k 传播 (沿 x)</text>
-    <circle cx="672" cy="40" r="5" fill="#c0392b"/><text x="682" y="44" fill="#555555">Mie 极坐标</text>
+    <circle cx="470" cy="40" r="5" fill="#3b7dd8"/><text x="480" y="44" fill="#555555">E field (along z)</text>
+    <circle cx="560" cy="40" r="5" fill="#e08a2b"/><text x="570" y="44" fill="#555555">k propagation (along x)</text>
+    <circle cx="672" cy="40" r="5" fill="#c0392b"/><text x="682" y="44" fill="#555555">Mie polar coords</text>
   </g>
 </svg>
