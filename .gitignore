@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# Test / cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Generated figures (keep docs/*.svg checked in; ignore PNG outputs)
+docs/*.png
+*.npy
+*.npz
+
+# Large phantom data (download separately)
+phantoms/*.h5
+phantoms/*.mat
+phantoms/data/
