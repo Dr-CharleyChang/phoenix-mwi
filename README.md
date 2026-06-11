@@ -3,8 +3,9 @@
 2D/3D microwave imaging (MWI) forward & inverse simulation, aimed at breast and
 bone-density detection research. Companion theory notes live in `docs/`.
 
-**Current stage: F2 — CG-FFT acceleration. The dense MoM solve is now matrix-free
-(block-Toeplitz → FFT convolution), validated bit-for-bit against F1's dense solver.**
+**Current stage: F2 — CG-FFT acceleration (in progress). Implement the matrix-free
+operator in `mwisim/operators.py` per `docs/F2_Tutorial_CG-FFT-matrix-free-solver.md`;
+`tests/test_f2.py` (T9-T14) is the progress bar.**
 
 > Built in public · physics-first · every stage validated against an analytic
 > solution or a public benchmark.
@@ -60,7 +61,7 @@ on a log-log axis (monotone decreasing).
 | Stage | Content | Status |
 |---|---|---|
 | **F1** | 2D MoM forward + Mie validation | ✅ done (pytest 7/7, 3.15% pointwise, monotone convergence) |
-| **F2** | CG-FFT acceleration (matrix-free + Toeplitz) | ✅ done (pytest 15/15, 5e-16 vs dense, N=102k in 0.24s) |
+| **F2** | CG-FFT acceleration (matrix-free + Toeplitz) | 🔨 in progress (tutorial + stubs + red tests T9-T14) |
 | F3 | UWCEM phantom + Cole-Cole multi-frequency | ⏳ |
 | I1–I4 | Inversion: Born → BIM/DBIM → CGLS/LSQR → PnP-DBIM | ⏳ |
 | HLS | Zynq-7020 FFT-core acceleration (reuses Zenith-Radar) | ⏳ |

@@ -1,24 +1,24 @@
 """Matrix-free forward operators — F2 stage (CG-FFT acceleration).
 
-On a regular grid the Richmond MoM coupling matrix is **block-Toeplitz with
-Toeplitz blocks (BTTB)**: its entries depend only on the *displacement*
-``r_m - r_n``, not on the absolute positions.  A BTTB matrix-vector product is a
-2D convolution, evaluated in ``O(N log N)`` with an FFT and a circulant
-embedding (zero-padding to kill wrap-around).  This turns the dense
-``(I - D) E = E_inc`` solve (``O(N^3)`` factorisation, ``O(N^2)`` storage) into a
-matrix-free iterative solve (``O(N log N)`` per iteration, ``O(N)`` storage),
-which is what makes large / 3D MWI problems tractable.
+YOUR TASK (F2): implement the TODO-marked methods of ``GreenFFT`` so that
+``tests/test_f2.py`` (T9-T14) goes green.  Tutorial:
+``docs/F2_Tutorial_CG-FFT-matrix-free-solver.md``.
 
-Convention matches ``mom.py``: ``e^{+jwt}`` / ``H^(2)``, equal-area cell radius
-``a = d/sqrt(pi)``.  The kernel reproduced here is exactly ``mom.build_D``:
+The idea: on a regular grid the Richmond MoM matrix is block-Toeplitz with
+Toeplitz blocks (BTTB) — entries depend only on the displacement r_m - r_n.
+A BTTB matvec is a 2D convolution, evaluated in O(N log N) with an FFT and a
+circulant embedding (zero-padding to kill wrap-around).  The dense
+(I - D) E = E_inc solve becomes a matrix-free iterative solve.
+
+Kernel to reproduce — exactly ``mom.build_D`` (including the F1 self-cell fix!):
 
     off-diagonal  g(rho) = pref * J1(k_b a) * H0^(2)(k_b rho)      (rho > 0)
     self-cell     g(0)   = pref * H1^(2)(k_b a) - 1
-    with          pref   = -(j*pi*k_b*a/2)
+    with          pref   = -(j*pi*k_b*a/2),  a = d/sqrt(pi)
 
-and ``D_mn = g(r_m - r_n) * chi_n``.
+and D_mn = g(r_m - r_n) * chi_n.   Convention e^{+jwt} / H^(2), as in mom.py.
 
-Tutorial refs: F2 (CG-FFT), notes chapter 7; A_op/AH_op note 9.6.3.0.
+Tutorial refs: F2 tutorial §1-§3; A_op/AH_op note 9.6.3.0.
 """
 from __future__ import annotations
 
@@ -29,10 +29,11 @@ import scipy.sparse.linalg as spla
 
 
 def infer_grid_shape(centers: np.ndarray) -> tuple[int, int]:
-    """Recover (Ny, Nx) from a meshgrid-raveled ``centers`` array.
+    """Recover (Ny, Nx) from a meshgrid-raveled ``centers`` array.  (GIVEN)
 
     ``grid.make_grid`` builds ``centers`` row-major (C order) so that flat index
-    ``n = iy * Nx + ix``.  We count unique coordinates to recover the shape.
+    ``n = iy * Nx + ix``.  Read this carefully — it encodes the ravel convention
+    your kernel axes must match (axis 0 = y!).
     """
     nx = np.unique(np.round(centers[:, 0], 12)).size
     ny = np.unique(np.round(centers[:, 1], 12)).size
@@ -47,22 +48,8 @@ def infer_grid_shape(centers: np.ndarray) -> tuple[int, int]:
 class GreenFFT:
     """Matrix-free Richmond MoM operator via circulant-embedded FFT.
 
-    Parameters
-    ----------
-    centers : (N, 2) float
-        Cell centers from ``grid.make_grid`` (regular grid, row-major).
-    chi : (N,) complex
-        Contrast per cell.
-    k_b : complex
-        Background wavenumber.
-    d : float
-        Cell side length.
-
-    Notes
-    -----
-    The first-column kernel ``g`` of the BTTB matrix is precomputed and FFT'd
-    once; every matvec is then two FFTs of the padded field.  ``apply_D`` and
-    ``apply_IminusD`` are matrix-free and never form an ``N x N`` array.
+    Plan: precompute the displacement kernel g and its FFT once in __init__;
+    every matvec is then two FFTs of the padded field.  Never form NxN.
     """
 
     def __init__(self, centers: np.ndarray, chi: np.ndarray, k_b: complex, d: float):
@@ -72,50 +59,50 @@ class GreenFFT:
         self.d = float(d)
         self.chi = np.asarray(chi, dtype=complex).reshape(self.ny, self.nx)
 
-        a = d / np.sqrt(np.pi)
-        pref = -(1j * np.pi * k_b * a / 2)
-
-        # displacement-index grid: dy in [-(Ny-1), Ny-1], dx in [-(Nx-1), Nx-1]
-        dyr = np.arange(-(self.ny - 1), self.ny)
-        dxr = np.arange(-(self.nx - 1), self.nx)
-        DY, DX = np.meshgrid(dyr, dxr, indexing="ij")
-        rho = d * np.sqrt(DX.astype(float) ** 2 + DY.astype(float) ** 2)
-
-        with np.errstate(invalid="ignore"):
-            g_off = pref * jv(1, k_b * a) * hankel2(0, k_b * rho)
-        g_self = pref * hankel2(1, k_b * a) - 1.0
-        g = np.where(rho > 0, g_off, g_self).astype(complex)
-
-        # circulant embedding: pad to >= (2N-1) in each axis, next fast FFT len
-        self.py = next_fast_len(2 * self.ny - 1)
-        self.px = next_fast_len(2 * self.nx - 1)
-
-        g_pad = np.zeros((self.py, self.px), dtype=complex)
-        # place displacement (dy, dx) at index (dy % py, dx % px): negatives wrap
-        iy = np.mod(dyr, self.py)
-        ix = np.mod(dxr, self.px)
-        g_pad[np.ix_(iy, ix)] = g
-        self.G_hat = fft2(g_pad)
+        # TODO (F2 §3, step 1): build the displacement kernel g.
+        #   1. a = d/sqrt(pi); pref = -(1j*pi*k_b*a/2).
+        #   2. displacement ranges: dyr = np.arange(-(ny-1), ny), same for dxr;
+        #      meshgrid with indexing="ij"; rho = d*sqrt(DX^2 + DY^2).
+        #   3. off-diagonal g via J1/H0^(2); evaluate inside
+        #      np.errstate(invalid="ignore") — hankel2(0, 0) is NaN.
+        #   4. self term g(0) = pref*H1^(2)(k_b a) - 1   (the F1 "-1"!).
+        #      Combine with np.where(rho > 0, ...).
+        #
+        # TODO (F2 §3, step 2): circulant embedding.
+        #   5. self.py / self.px = next_fast_len(2*n - 1) per axis.
+        #   6. g_pad = zeros((py, px)); place displacement (dy, dx) at index
+        #      (dy % py, dx % px) — np.mod + np.ix_ scatter the block.
+        #   7. self.G_hat = fft2(g_pad).   Precompute ONCE here.
+        raise NotImplementedError("F2 §3: build kernel + circulant embedding")
 
     # -- core matvecs ------------------------------------------------------
     def _conv(self, v_grid: np.ndarray) -> np.ndarray:
-        """2D linear convolution g * v via circulant-embedded FFT."""
-        vp = np.zeros((self.py, self.px), dtype=complex)
-        vp[: self.ny, : self.nx] = v_grid
-        out = ifft2(self.G_hat * fft2(vp))
-        return out[: self.ny, : self.nx]
+        """2D *linear* convolution g * v via the padded FFT.
+
+        TODO (F2 §3, step 3): zero-pad v_grid into the top-left (ny, nx) corner
+        of a (py, px) array; out = ifft2(self.G_hat * fft2(vp)); return the
+        [:ny, :nx] slice.  The wrap-around garbage lives in what you discard.
+        """
+        raise NotImplementedError
 
     def apply_D(self, x: np.ndarray) -> np.ndarray:
-        """Matrix-free ``D @ x`` (flat in, flat out). ``D_mn = g(r_m-r_n) chi_n``."""
-        v = (self.chi * x.reshape(self.ny, self.nx))
-        return self._conv(v).ravel()
+        """Matrix-free ``D @ x`` (flat in, flat out).
+
+        TODO (F2 §3, step 4): reshape x to (ny, nx), multiply by chi FIRST
+        (chi_n indexes the *source* cell — column index), convolve, ravel.
+        Target: T9 — match dense build_D @ x on a RANDOM vector to <1e-12.
+        """
+        raise NotImplementedError
 
     def apply_IminusD(self, x: np.ndarray) -> np.ndarray:
-        """Matrix-free ``(I - D) @ x`` — the forward-solve operator."""
-        return x - self.apply_D(x)
+        """Matrix-free ``(I - D) @ x`` — the forward-solve operator.
+
+        TODO: one line.
+        """
+        raise NotImplementedError
 
     def as_linear_operator(self) -> spla.LinearOperator:
-        """SciPy ``LinearOperator`` for ``(I - D)`` (for bicgstab/gmres)."""
+        """SciPy ``LinearOperator`` for ``(I - D)``.  (GIVEN — boilerplate.)"""
         return spla.LinearOperator(
             shape=(self.N, self.N), matvec=self.apply_IminusD, dtype=complex
         )
@@ -128,39 +115,27 @@ class GreenFFT:
         maxiter: int | None = None,
         method: str = "bicgstab",
     ) -> tuple[np.ndarray, dict]:
-        """Solve ``(I - D) E = E_inc`` matrix-free.
+        """Solve ``(I - D) E = E_inc`` matrix-free.  Returns (E_tot, info).
 
-        Returns ``(E_tot, info)`` carrying iteration count and the final relative
-        residual.  ``method`` is ``"bicgstab"`` (classic CG-FFT pairing) or
-        ``"gmres"`` (more robust for strong scattering).
+        TODO (F2 §3, step 5):
+          1. A = self.as_linear_operator(); pick scipy.sparse.linalg.bicgstab
+             (method="bicgstab") or gmres (method="gmres").
+          2. SciPy >=1.12 renamed `tol` -> `rtol`: call with rtol=..., and on
+             TypeError fall back to tol=... .
+          3. gmres: pass callback_type="pr_norm" explicitly (else a
+             DeprecationWarning, and "legacy" counts outer iters only).
+          4. Count iterations with a callback; compute the final relative
+             residual ||b - A E|| / ||b|| yourself — don't trust `status` alone.
+          5. info dict: iters, status, rel_residual, method, N.
+        Targets: T11/T12 — match the F1 direct solve to <1e-7 at tol=1e-10.
         """
-        A = self.as_linear_operator()
-        b = np.asarray(E_inc, dtype=complex)
-
-        iters = {"n": 0}
-
-        def _cb(xk):
-            iters["n"] += 1
-
-        solver = {"bicgstab": spla.bicgstab, "gmres": spla.gmres}[method]
-        kw = dict(maxiter=maxiter, callback=_cb)
-        if method == "gmres":
-            kw["callback_type"] = "pr_norm"  # count inner iters, silence warning
-        # SciPy >=1.12 renamed `tol`->`rtol`; support both.
-        try:
-            E, status = solver(A, b, rtol=tol, atol=0.0, **kw)
-        except TypeError:
-            E, status = solver(A, b, tol=tol, atol=0.0, **kw)
-
-        res = np.linalg.norm(b - A.matvec(E)) / np.linalg.norm(b)
-        info = {"iters": iters["n"], "status": int(status),
-                "rel_residual": float(res), "method": method, "N": self.N}
-        return E, info
+        raise NotImplementedError
 
 
 # --------------------------------------------------------------------------
-# Born operators (inversion stage). Dense form retained for small problems;
-# the in-domain Green action can reuse GreenFFT in DBIM later.
+# Born operators (inversion stage; already implemented pre-F2). Dense form is
+# fine for small problems; DBIM will later reuse GreenFFT for the in-domain
+# Green action.
 # --------------------------------------------------------------------------
 def A_op(v: np.ndarray, E_inc: np.ndarray, G_tr, k_b: complex, dS: float) -> np.ndarray:
     """Forward Born operator ``A v`` (contrast -> scattered field at rx).
