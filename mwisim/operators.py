@@ -73,8 +73,25 @@ class GreenFFT:
         #   6. g_pad = zeros((py, px)); place displacement (dy, dx) at index
         #      (dy % py, dx % px) — np.mod + np.ix_ scatter the block.
         #   7. self.G_hat = fft2(g_pad).   Precompute ONCE here.
-        raise NotImplementedError("F2 §3: build kernel + circulant embedding")
+        a = self.d / np.sqrt(np.pi)
+        pref = -(1j * np.pi * self.k_b * a / 2)
 
+        dyr = np.arange(-(self.ny - 1), self.ny)
+        dxr = np.arange(-(self.nx - 1), self.nx)
+        DY, DX = np.meshgrid(dyr, dxr, indexing = "ij")
+        rho = self.d * np.sqrt(DX**2 + DY**2)
+
+        with np.errstate(invalid="ignore"):
+            g_off = pref * jv(1, self.k_b * a) * hankel2(0, self.k_b * rho)
+        g_self = pref * hankel2(1, self.k_b * a) - 1
+        g = np.where(rho > 0, g_off, g_self)
+        
+        self.py = next_fast_len(2 * self.ny - 1)
+        self.px = next_fast_len(2 * self.nx - 1)
+        g_pad = np.zeros((self.py, self.px), dtype=complex)
+        g_pad[np.mod(DY, self.py), np.mod(DX, self.px)] = g
+        self.G_hat = fft2(g_pad)
+        
     # -- core matvecs ------------------------------------------------------
     def _conv(self, v_grid: np.ndarray) -> np.ndarray:
         """2D *linear* convolution g * v via the padded FFT.
@@ -83,7 +100,9 @@ class GreenFFT:
         of a (py, px) array; out = ifft2(self.G_hat * fft2(vp)); return the
         [:ny, :nx] slice.  The wrap-around garbage lives in what you discard.
         """
-        raise NotImplementedError
+        vp = np.zeros((self.py, self.px), dtype=complex)
+        vp[:self.ny, :self.nx] = v_grid
+        return ifft2(self.G_hat * fft2(vp))[:self.ny, :self.nx]
 
     def apply_D(self, x: np.ndarray) -> np.ndarray:
         """Matrix-free ``D @ x`` (flat in, flat out).
@@ -92,14 +111,16 @@ class GreenFFT:
         (chi_n indexes the *source* cell — column index), convolve, ravel.
         Target: T9 — match dense build_D @ x on a RANDOM vector to <1e-12.
         """
-        raise NotImplementedError
+        x_grid = x.reshape(self.ny, self.nx)
+        x_grid= self.chi * x_grid
+        return self._conv(x_grid).ravel()
 
     def apply_IminusD(self, x: np.ndarray) -> np.ndarray:
         """Matrix-free ``(I - D) @ x`` — the forward-solve operator.
 
         TODO: one line.
         """
-        raise NotImplementedError
+        return x - self.apply_D(x)
 
     def as_linear_operator(self) -> spla.LinearOperator:
         """SciPy ``LinearOperator`` for ``(I - D)``.  (GIVEN — boilerplate.)"""
@@ -129,7 +150,35 @@ class GreenFFT:
           5. info dict: iters, status, rel_residual, method, N.
         Targets: T11/T12 — match the F1 direct solve to <1e-7 at tol=1e-10.
         """
-        raise NotImplementedError
+        A = self.as_linear_operator()
+    
+        iters = 0
+        def _cb(_):
+            nonlocal iters
+            iters += 1
+        
+        if method == "bicgstab":
+            solver, extra = spla.bicgstab, {}
+        elif method == "gmres":
+            solver, extra = spla.gmres, {"callback_type": "pr_norm"}
+        else:
+            raise ValueError(f"Unknown method: {method}")
+        
+        try:
+            E_tot, status = solver(A, E_inc, rtol=tol, maxiter=maxiter, callback=_cb, **extra)
+        except TypeError:
+            E_tot, status = solver(A, E_inc, tol=tol, maxiter=maxiter, callback=_cb, **extra)   
+        
+        rel_residual = np.linalg.norm(E_inc - A @ E_tot) / np.linalg.norm(E_inc)
+
+        info = {
+            "iters": iters,
+            "status": status,
+            "rel_residual": rel_residual,
+            "method": method,
+            "N": self.N,
+        }
+        return E_tot, info
 
 
 # --------------------------------------------------------------------------

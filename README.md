@@ -3,9 +3,9 @@
 2D/3D microwave imaging (MWI) forward & inverse simulation, aimed at breast and
 bone-density detection research. Companion theory notes live in `docs/`.
 
-**Current stage: F2 — CG-FFT acceleration (in progress). Implement the matrix-free
-operator in `mwisim/operators.py` per `docs/F2_Tutorial_CG-FFT-matrix-free-solver.md`;
-`tests/test_f2.py` (T9-T14) is the progress bar.**
+**Current stage: F2 — CG-FFT acceleration ✅ done. Matrix-free `GreenFFT` in
+`mwisim/operators.py` solves `(I - D)E = E_inc` in O(N log N); validated against the
+F1 dense solve and Mie (`tests/test_f2.py`, T9-T14). Next: I1 — Born inversion.**
 
 > Built in public · physics-first · every stage validated against an analytic
 > solution or a public benchmark.
@@ -56,12 +56,23 @@ python scripts/run_f1.py     # writes docs/fig_pointwise.png and docs/fig_conver
 solution (line); `fig_convergence.png` shows relative L2 error vs cells-per-wavelength
 on a log-log axis (monotone decreasing).
 
+## Running F2
+
+```bash
+python -m pytest tests/test_f2.py -q   # T9-T14; all green == F2 passes
+python scripts/run_f2.py               # writes docs/fig_f2_scaling.png
+```
+
+`fig_f2_scaling.png` plots wall-clock time and memory vs N for the matrix-free CG-FFT
+solver against the dense MoM solve. The dense curve cuts off where the N×N matrix stops
+fitting in RAM; the CG-FFT curve keeps going (N=102400 in ~0.5 s, 7 iterations).
+
 ## Roadmap
 
 | Stage | Content | Status |
 |---|---|---|
 | **F1** | 2D MoM forward + Mie validation | ✅ done (pytest 7/7, 3.15% pointwise, monotone convergence) |
-| **F2** | CG-FFT acceleration (matrix-free + Toeplitz) | 🔨 in progress (tutorial + stubs + red tests T9-T14) |
+| **F2** | CG-FFT acceleration (matrix-free + Toeplitz) | ✅ done (pytest 8/8; N=102400 in 0.47 s / 7 iters; dense would need 167 GB) |
 | F3 | UWCEM phantom + Cole-Cole multi-frequency | ⏳ |
 | I1–I4 | Inversion: Born → BIM/DBIM → CGLS/LSQR → PnP-DBIM | ⏳ |
 | HLS | Zynq-7020 FFT-core acceleration (reuses Zenith-Radar) | ⏳ |

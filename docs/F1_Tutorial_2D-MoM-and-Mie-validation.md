@@ -39,7 +39,7 @@ analytic solution**.
 
 ## 1. Physical setup: 2D TM, plane wave, contrast
 
-![Geometry](F1_geometry_2D-TM-cylinder.svg)
+![Geometry|800](F1_geometry_2D-TM-cylinder.svg)
 
 **TM polarization (E along $z$):** the field has a single scalar component $E_z(x,y)$,
 so the problem reduces from vector to **scalar** — the reason 2D beginners pick TM.
