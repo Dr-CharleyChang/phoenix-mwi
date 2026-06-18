@@ -8,6 +8,8 @@ version = "0.1.0"
 description = "2D/3D microwave imaging forward & inverse simulation (breast / bone density research)"
 readme = "README.md"
 requires-python = ">=3.10"
+license = "Apache-2.0"
+authors = [{ name = "Charley Chang" }]
 dependencies = ["numpy>=1.24", "scipy>=1.10", "matplotlib>=3.7"]
 
 [project.optional-dependencies]

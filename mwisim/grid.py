@@ -30,13 +30,10 @@ def make_grid(domain_size: float, d: float) -> tuple[np.ndarray, float]:
     center. Tip: np.meshgrid + reshape to (N, 2).
     """
     N_cells = math.ceil(domain_size / d)
-    if N_cells % 2 == 0:
-        x_ = np.linspace(-(N_cells // 2) * d + d / 2, (N_cells // 2) * d - d / 2, N_cells)
-        y_ = x_
-    else:
-        x_ = np.linspace(-(N_cells // 2) * d, (N_cells // 2) * d, N_cells)
-        y_ = x_
-    X, Y = np.meshgrid(x_, y_, indexing="xy")
+    half = N_cells // 2
+    offset = d / 2 if (N_cells % 2 == 0) else 0.0
+    x_ = np.linspace(-half * d + offset, half * d - offset, N_cells)
+    X, Y = np.meshgrid(x_, x_, indexing="xy")
     centers = np.column_stack([X.ravel(), Y.ravel()])  # centers: (Ny*Nx, 2)
     dS = d**2
     return centers, dS

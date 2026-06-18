@@ -84,6 +84,16 @@ here), each stage is checked against an **analytic solution** (Mie) and **public
 benchmarks** (UWCEM phantoms, Institut Fresnel measured datasets). This yields
 credible "validated" evidence from simulation alone.
 
+## How to cite
+
+If you use phoenix-mwi in academic work, please cite it. GitHub shows a "Cite this
+repository" button generated from `CITATION.cff`; or cite as:
+
+> Chang, C. (2026). *phoenix-mwi: a pluggable platform for 2D/3D microwave imaging and
+> tomography* (Version 0.1.0) [Software]. https://github.com/Dr-CharleyChang/phoenix-mwi
+
 ## License
 
-MIT (see `LICENSE`).
+Apache License 2.0 (see `LICENSE` and `NOTICE`). Free for academic, research, and
+commercial use; you must retain the copyright and attribution notices when
+redistributing. Academic citation is requested via `CITATION.cff` (see "How to cite").

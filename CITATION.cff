@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software in academic work, please cite it as below."
+title: "phoenix-mwi: a pluggable platform for 2D/3D microwave imaging and tomography"
+abstract: >-
+  phoenix-mwi (import name: mwisim) is an open-source Python platform for microwave
+  imaging (MWI) and quantitative microwave tomography (MWT), aimed at breast and
+  bone-density detection research. It provides a validated 2D method-of-moments
+  forward solver (dense and matrix-free CG-FFT), with pluggable interfaces for
+  forward solvers, preprocessing, qualitative imaging, quantitative inversion,
+  AI reconstruction, and evaluation.
+type: software
+authors:
+  - family-names: Chang
+    given-names: Charley
+    # orcid: "https://orcid.org/0000-0000-0000-0000"   # add your ORCID if you have one
+license: Apache-2.0
+repository-code: "https://github.com/Dr-CharleyChang/phoenix-mwi"
+url: "https://github.com/Dr-CharleyChang/phoenix-mwi"
+version: "0.1.0"
+date-released: "2026-06-16"
+keywords:
+  - microwave imaging
+  - microwave tomography
+  - inverse scattering
+  - method of moments
+  - Lippmann-Schwinger
+  - breast cancer detection
+  - bone density
+  - Python

@@ -5,7 +5,6 @@ status: milestone — F2 complete
 date: 2026-06-15
 related: "[[F2_Tutorial_CG-FFT-matrix-free-solver]], [[F1_milestone]]"
 ---
-
 # F2 Milestone — CG-FFT matrix-free forward solver
 
 > **In one line:** the F1 forward solver built a dense $N\times N$ matrix and factorised

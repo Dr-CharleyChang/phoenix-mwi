@@ -10,6 +10,8 @@ from __future__ import annotations
 import numpy as np
 from scipy.special import jv, hankel2
 
+from .green import green_2d
+
 def build_D(centers: np.ndarray, chi: np.ndarray, k_b: complex, d: float) -> np.ndarray:
     """Richmond coupling matrix D (N x N), so the system is (I - D) E = E_inc.
 
@@ -92,6 +94,6 @@ def scattered_field(
     """
     pref = k_b**2 * dS
     rho = np.sqrt(((rx_points[:, None, :] - centers[None, :, :])**2).sum(axis=-1))
-    G = (1 / 4j) * hankel2(0, k_b * rho)   # rx outside cylinder => rho>0, no self-cell
+    G = green_2d(k_b, rho)   # (1/4j) H0^(2)(k_b rho); rx outside cylinder => rho>0, no self-cell
     E_sc = pref * (G @ (chi * E_tot))
     return E_sc
