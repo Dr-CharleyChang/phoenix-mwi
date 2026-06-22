@@ -46,7 +46,7 @@ def convergence_study(d_list, params: dict) -> tuple[np.ndarray, np.ndarray]:
     C0 = 299_792_458
     lam0 = C0 / f
     k_b = 2 * np.pi * f / C0 * np.sqrt(eps_b)
-    k_1 = 2 * np.pi * f / lam0 * np.sqrt(eps_r)
+    k_1 = 2 * np.pi * f / C0 * np.sqrt(eps_r)   # FIX: f/C0 = 1/lam0 (was f/lam0 = f^2/C0)
     lam1 = lam0 / np.sqrt(eps_r)
 
     ang = np.linspace(0, 2 * np.pi, N_rx, endpoint=False)

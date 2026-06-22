@@ -73,6 +73,7 @@ class GreenFFT:
         #   6. g_pad = zeros((py, px)); place displacement (dy, dx) at index
         #      (dy % py, dx % px) — np.mod + np.ix_ scatter the block.
         #   7. self.G_hat = fft2(g_pad).   Precompute ONCE here.
+        
         a = self.d / np.sqrt(np.pi)
         pref = -(1j * np.pi * self.k_b * a / 2)
 

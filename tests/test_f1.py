@@ -14,7 +14,7 @@ from mwisim.grid import make_grid, assign_contrast
 from mwisim.green import green_2d
 from mwisim.mom import build_D, incident_plane_wave, solve_total_field, scattered_field
 from mwisim.mie import mie_scattered
-from mwisim.metrics import rel_l2_error
+from mwisim.metrics import rel_l2_error, convergence_study
 
 C0 = 299_792_458.0
 
@@ -102,3 +102,16 @@ def test_T8_mom_matches_mie_strong():
     E_mom = scattered_field(rx, s["centers"], s["chi"], E_tot, s["k_b"], s["dS"])
     E_mie = mie_scattered(rx, s["k_b"], s["k_1"], s["R_cyl"])
     assert rel_l2_error(E_mom, E_mie) < 0.05
+
+
+# ---------- T8b: convergence study trends down (guards the convergence_study k_1 bug) ----------
+def test_T8b_convergence_decreases():
+    lam0 = C0 / 1e9
+    P = dict(f=1e9, eps_r=2.0, eps_b=1.0, R_cyl=0.5 * lam0, R_obs=1.5 * lam0,
+             N_rx=72, domain_size=2.5 * lam0)
+    lam1 = lam0 / np.sqrt(2.0)
+    # Use far-apart grids: the trend (6->30 cells/λ) is solidly down even though the curve
+    # has small non-monotonic bumps between adjacent points (boundary staircasing).
+    n_per_lambda, errs = convergence_study([lam1 / n for n in (6, 30)], P)
+    assert errs[-1] < 0.5 * errs[0]   # fine grid clearly beats coarse (a flat ~93% fails this)
+    assert errs[-1] < 0.03            # converges to a few percent

@@ -64,22 +64,29 @@ We use the engineering time convention $e^{+j\omega t}$ (same as radar). Consequ
 ### 2.2 Incident, scattered, total
 
 The field splits into two parts:
+
 $$E_z = \underbrace{E_z^{\text{inc}}}_{\text{the wave you sent in}} + \underbrace{E_z^{\text{sc}}}_{\text{what the object re-radiates}}$$
+
 The incident wave is a plane wave travelling along $+x$: $E_z^{\text{inc}}=E_0 e^{-jk_b x}$. The scattered part is what we want to predict (and later, measure and invert).
 
 ### 2.3 The contrast — "how different is each point from the background?"
 
 Define the **contrast function**
+
 $$\chi(\mathbf r)=\frac{\varepsilon_r(\mathbf r)}{\varepsilon_b}-1.$$
+
 It is $0$ in empty background and nonzero only inside the object. $\chi$ is the *unknown* in the imaging problem; in the *forward* problem we know it and compute the field.
 
 ### 2.4 The master equation (Lippmann–Schwinger)
 
 Every scattering simulation in this repo is one equation:
+
 $$\boxed{\,E_z(\mathbf r)=E_z^{\text{inc}}(\mathbf r)+k_b^2\!\int_S G(\mathbf r,\mathbf r')\,\chi(\mathbf r')\,E_z(\mathbf r')\,dS'\,}$$
+
 In words: **the field at a point = the wave you sent in + the sum of tiny re-radiations from every bit of object, each weighted by how strong it is ($\chi$), how strong the field there is ($E_z$), and how a wave travels from there to here (the Green's function $G$).**
 
 The 2D free-space Green's function (our $e^{+j\omega t}$ convention) is
+
 $$G(\mathbf r,\mathbf r')=\frac{1}{4j}H_0^{(2)}\!\bigl(k_b|\mathbf r-\mathbf r'|\bigr).$$
 
 > **Why is this called nonlinear "in general" but linear here?** $E_z$ appears on *both* sides. In the forward problem $\chi$ is known, so it's a linear equation in the unknown $E_z$ — one solve and done. In the *inverse* problem $\chi$ and $E_z$ are *both* unknown and multiply each other → genuinely nonlinear → that's why inversion (I1–I4) needs iteration (Born, DBIM…).
@@ -102,8 +109,6 @@ When $m=n$ (a cell's effect on itself), $\mathbf r_m=\mathbf r_n$ and $G$ blows 
 
 $$D_{mn}=\begin{cases}-\,\chi_n\,\dfrac{j\pi k_b a}{2}\,J_1(k_b a)\,H_0^{(2)}(k_b\rho_{mn}), & m\neq n,\\[2mm]-\,\chi_n\Bigl[\dfrac{j\pi k_b a}{2}\,H_1^{(2)}(k_b a)+1\Bigr], & m=n.\end{cases}$$
 
-> ⚠️ **The famous "+1" (the F1 bug).** That extra $+1$ inside the self term came from the lower limit of the radial integral ($\lim_{u\to0}uH_1^{(2)}(u)=2j/\pi\neq0$). Dropping it matched Mie at *weak* contrast but diverged (~80% error) at strong contrast. It cost a day to find. In the code you'll see it as `... - 1` written *before* multiplying the column by $\chi_n$, so it becomes the $-\chi_n$ above. Never delete it.
-
 ### 2.7 Getting the scattered field at the receivers
 
 Once we know $\mathbf E$ inside the object, the field at any *exterior* receiver $\mathbf r_r$ is a plain weighted sum (no singularity, receivers are far from cells):
@@ -121,6 +126,7 @@ with mode coefficients $a_n$ built from Bessel/Hankel functions and the boundary
 ### 2.9 The validation metric
 
 Relative $L_2$ error between our field and Mie's:
+
 $$\text{err}=\frac{\lVert E^{\text{MoM}}-E^{\text{Mie}}\rVert_2}{\lVert E^{\text{Mie}}\rVert_2}.$$
 
 F1 passes when this is small **and** shrinks as the grid is refined (a *convergence curve*).
@@ -133,22 +139,22 @@ That's the whole algorithm. Everything below is this maths, written in Python.
 
 You know MATLAB, so here is only the delta.
 
-| Idea | MATLAB | NumPy (this repo) |
-|---|---|---|
-| import the library | (built in) | `import numpy as np` |
-| make a vector | `linspace(0,1,5)` | `np.linspace(0,1,5)` |
-| imaginary unit | `1i` or `1j` | `1j` (e.g. `4j` is one literal!) |
-| matrix multiply | `A*B` | `A @ B` (the `@` operator) |
-| **elementwise** multiply | `A.*B` | `A * B` |
-| transpose / conj-transpose | `A.'` / `A'` | `A.T` / `A.conj().T` |
-| solve $Ax=b$ | `A\b` | `np.linalg.solve(A, b)` |
-| 2-norm | `norm(v)` | `np.linalg.norm(v)` |
-| build a grid | `meshgrid` | `np.meshgrid(..., indexing="ij" or "xy")` |
-| indexing base | **1-based**, `v(1)` | **0-based**, `v[0]` |
-| index range | `v(2:5)` (incl.) | `v[1:5]` (**end-exclusive**) |
-| last element | `v(end)` | `v[-1]` |
-| reshape to column list | `reshape` | `arr.ravel()` / `arr.reshape(...)` |
-| stack columns | `[a b]` | `np.column_stack([a, b])` |
+| Idea                       | MATLAB              | NumPy (this repo)                         |
+| -------------------------- | ------------------- | ----------------------------------------- |
+| import the library         | (built in)          | `import numpy as np`                      |
+| make a vector              | `linspace(0,1,5)`   | `np.linspace(0,1,5)`                      |
+| imaginary unit             | `1i` or `1j`        | `1j` (e.g. `4j` is one literal!)          |
+| matrix multiply            | `A*B`               | `A @ B` (the `@` operator)                |
+| **elementwise** multiply   | `A.*B`              | `A * B`                                   |
+| transpose / conj-transpose | `A.'` / `A'`        | `A.T` / `A.conj().T`                      |
+| solve $Ax=b$               | `A\b`               | `np.linalg.solve(A, b)`                   |
+| 2-norm                     | `norm(v)`           | `np.linalg.norm(v)`                       |
+| build a grid               | `meshgrid`          | `np.meshgrid(..., indexing="ij" or "xy")` |
+| indexing base              | **1-based**, `v(1)` | **0-based**, `v[0]`                       |
+| index range                | `v(2:5)` (incl.)    | `v[1:5]` (**end-exclusive**)              |
+| last element               | `v(end)`            | `v[-1]`                                   |
+| reshape to column list     | `reshape`           | `arr.ravel()` / `arr.reshape(...)`        |
+| stack columns              | `[a b]`             | `np.column_stack([a, b])`                 |
 
 Five gotchas that matter here:
 
@@ -244,6 +250,8 @@ This is the F2 deliverable; full theory in [[F2_Tutorial_CG-FFT-matrix-free-solv
 - **`apply_IminusD(x)`** — `x - apply_D(x)`: the operator $(\mathbf I-\mathbf D)$.
 - **`as_linear_operator()`** — wraps the above so SciPy's iterative solvers can call it with just matvecs (no matrix needed).
 - **`solve_total_field(...)`** — BiCGStab or GMRES iterates to the answer; a callback counts iterations; it reports an honest residual $\lVert b-A\mathbf E\rVert/\lVert b\rVert$.
+
+In the `operators.py`, `g` is the kernel evaluated at _every possible displacement_ $\mathbf r_n-\mathbf r_m$  between two cells on the grid. With cells indexed $i_y\in[0,n_y), i_x\in[0,n_x)$, the index _differences_ run $\Delta i_y\in[-(n_y-1),\,n_y-1]$  and $\Delta i_x\in[-(n_x-1),\,n_x-1]$ — that's $2n_y-1$ by $2n_x-1$ distinct displacements. So `g` is `(2ny-1, 2nx-1)`, while $\chi$ (and the field) are `(ny, nx)`. That size difference is exactly _why_ we then circulant-embed `g` and zero-pad the field to a common `(py, px)` before the FFT.
 
 Also in this file: **`A_op` / `AH_op`** — the Born forward operator and its adjoint for the *inversion* stage (I1+). `A_op(v) = k_b^2 dS · G_tr @ (E_inc * v)` maps a contrast guess to predicted receiver fields; `AH_op` back-projects a residual onto the grid. These are the seeds of the imaging work to come.
 
@@ -544,8 +552,7 @@ When a test fails, pytest prints the assert line and the offending values, e.g. 
 
 ## Appendix D — Python from zero (for a newcomer)
 
-> Systematic walkthrough of the Python language features this repo (and the platform
-> design) relies on. Written assuming **no prior Python**. MATLAB analogies throughout.
+> Systematic walkthrough of the Python language features this repo (and the platform design) relies on. Written assuming **no prior Python**. MATLAB analogies throughout.
 
 ### D.1 Functions, parameters, and arguments
 
@@ -574,9 +581,7 @@ grid(0.2)            # uses d=0.01
 grid(0.2, d=0.005)  # overrides
 ```
 
-This is exactly why the design puts implementation-specific knobs in `__init__` with
-defaults: `MoM2D(tol=1e-8, method="bicgstab")` — the caller overrides only what they care
-about, and every `ForwardSolver` is still *called* the same minimal way later.
+This is exactly why the design puts implementation-specific knobs in `__init__` with defaults: `MoM2D(tol=1e-8, method="bicgstab")` — the caller overrides only what they care about, and every `ForwardSolver` is still *called* the same minimal way later.
 
 ### D.2 `*args` and `**kwargs` — collecting and unpacking arguments
 
@@ -596,11 +601,7 @@ f(1, 2, 3, x=10, y=20)
 # kwargs == {"x": 10, "y": 20}
 ```
 
-So `def solve_total_field(self, scene, E_inc, freq, **kwargs):` means "accept the three
-named parameters, and silently collect *any other keyword arguments* into a dict called
-`kwargs`." That is the **escape hatch**: a subclass can accept extra options without
-breaking the shared interface, because unknown keywords land in `kwargs` instead of
-raising an error.
+So `def solve_total_field(self, scene, E_inc, freq, **kwargs):` means "accept the three named parameters, and silently collect *any other keyword arguments* into a dict called `kwargs`." That is the **escape hatch**: a subclass can accept extra options without breaking the shared interface, because unknown keywords land in `kwargs` instead of raising an error.
 
 **Side 2 — at the call site (`*`/`**` = "unpack/spread out"):**
 
@@ -614,18 +615,14 @@ add(**opts)                # same as add(a=2, b=3) -- dict spread into keywords
 
 So in `solver(A, E_inc, rtol=tol, maxiter=maxiter, callback=_cb, **extra)`:
 - `extra` is a dict, e.g. `{"callback_type": "pr_norm"}` (for GMRES) or `{}` (for BiCGStab).
-- `**extra` **spreads that dict into keyword arguments** at the call. So when `extra` is
-  `{"callback_type":"pr_norm"}`, the call becomes `solver(..., callback_type="pr_norm")`;
-  when `extra` is `{}`, it adds nothing.
+- `**extra` **spreads that dict into keyword arguments** at the call. So when `extra` is `{"callback_type":"pr_norm"}`, the call becomes `solver(..., callback_type="pr_norm")`; when `extra` is `{}`, it adds nothing.
 - Net: one call line serves both solvers — the dict absorbs the argument that differs.
 
-MATLAB has no direct equivalent; the closest mental model is building a name/value pair
-list and splatting it into a function call.
+MATLAB has no direct equivalent; the closest mental model is building a name/value pair list and splatting it into a function call.
 
 ### D.3 Classes, objects, composition — and what `pipeline` is
 
-A **class** is a blueprint; an **instance** is a built object. Methods take `self` (the
-instance) as the first parameter:
+A **class** is a blueprint; an **instance** is a built object. Methods take `self` (the instance) as the first parameter:
 
 ```python
 class Counter:
@@ -638,12 +635,9 @@ c.bump()               # call a method; Python passes c as 'self'
 print(c.n)             # 6
 ```
 
-`self.n` is an **attribute** (data living on the object); `bump` is a **method**
-(a function living on the class). MATLAB analogy: `classdef`, `obj.n`, `obj.bump()`.
+`self.n` is an **attribute** (data living on the object); `bump` is a **method** (a function living on the class). MATLAB analogy: `classdef`, `obj.n`, `obj.bump()`.
 
-**Composition** = an object that holds *other* objects. The platform's `pipeline` is
-exactly this — a class (we will write it in Phase 0) that holds the chosen forward solver,
-preprocessor, imager, inverter, and runs them in order:
+**Composition** = an object that holds *other* objects. The platform's `pipeline` is exactly this — a class (we will write it in Phase 0) that holds the chosen forward solver, preprocessor, imager, inverter, and runs them in order:
 
 ```python
 class Pipeline:
@@ -662,11 +656,7 @@ pipe = Pipeline(forward=MoM2D(), inverter=MyInverter())
 result = pipe.run(data)
 ```
 
-So `pipeline.run(inverter=MyInverter())` (shorthand earlier) just means: **build a pipeline
-that uses your inverter instance, and run it.** `pipeline` is not a Python built-in — it's
-our own orchestration object. The point: the pipeline only knows the *interfaces*
-(`ForwardSolver`, `Inverter`), so swapping in any conforming object Just Works
-(polymorphism, §4.6 / Appendix A.5).
+So `pipeline.run(inverter=MyInverter())` (shorthand earlier) just means: **build a pipeline that uses your inverter instance, and run it.** `pipeline` is not a Python built-in — it's our own orchestration object. The point: the pipeline only knows the *interfaces* (`ForwardSolver`, `Inverter`), so swapping in any conforming object Just Works (polymorphism, §4.6 / Appendix A.5).
 
 ### D.4 Decorators and the registry — from zero
 
@@ -678,8 +668,7 @@ f = shout          # no parentheses: 'f' now refers to the function itself
 f("hi")            # "HI"
 ```
 
-**Step 2: a decorator is a function that takes a function/class and returns one.**
-`@deco` written above a definition is *sugar* for `thing = deco(thing)`:
+**Step 2: a decorator is a function that takes a function/class and returns one.** `@deco` written above a definition is *sugar* for `thing = deco(thing)`:
 
 ```python
 def trace(func):                 # a decorator
@@ -694,8 +683,7 @@ def greet(name):
 greet("charley")                 # prints "calling greet" then "hello charley"
 ```
 
-**Step 3: a decorator *with arguments* is a function that returns a decorator** (one extra
-layer). This is the registry:
+**Step 3: a decorator *with arguments* is a function that returns a decorator** (one extra layer). This is the registry:
 
 ```python
 REGISTRY = {"inverter": {}}            # a dict mapping name -> class
@@ -715,33 +703,18 @@ def build(kind, name, **cfg):          # look up by name and instantiate
 ```
 
 **When you need it vs not (important):**
-- *Don't* need it: to add your own algorithm, just subclass the interface and pass the
-  instance (D.3). This is the primary path.
-- *Do* want it: when a user picks an algorithm by **string** from a config file or command
-  line (`inverter: dbim`), the registry maps that string to the class. It's optional sugar
-  for config-driven selection, nothing more.
+- *Don't* need it: to add your own algorithm, just subclass the interface and pass the instance (D.3). This is the primary path.
+- *Do* want it: when a user picks an algorithm by **string** from a config file or command line (`inverter: dbim`), the registry maps that string to the class. It's optional sugar for config-driven selection, nothing more.
 
 ### D.5 Underscore naming conventions
 
 Three *different* uses of `_` — don't conflate them:
 
-1. **Underscore as a word separator (`snake_case`)** — just style, no special meaning:
-   `R_cyl`, `k_b`, `solve_total_field`, `n_per_lambda`. Python convention is lowercase
-   words joined by `_` (MATLAB people often use camelCase; Python prefers snake_case).
-2. **Leading underscore `_name`** — "internal / private by convention." It signals "this is
-   a helper, not part of the public interface; don't rely on it from outside." Examples in
-   this repo: `_setup`, `_derived`, `_cb`, `_conv`, `_ring`. Python does *not* enforce it
-   (you *can* still call it); it's a politeness signal. (`pytest` also uses it: a function
-   named `_setup` is **not** collected as a test, only `test_*` are.)
-3. **Trailing underscore `name_`** — used to avoid clashing with a Python keyword or
-   built-in name. E.g. you can't name a variable `class` (keyword), so people write
-   `class_`; `type_`, `id_` avoid shadowing built-ins `type`/`id`. In `run_f1.py`, `x_` and
-   `y_` use a trailing underscore as a mild "this is the raw 1-D axis" marker (and to avoid
-   colliding with the 2-D `X`, `Y`). Not mandatory, just a habit.
+1. **Underscore as a word separator (`snake_case`)** — just style, no special meaning: `R_cyl`, `k_b`, `solve_total_field`, `n_per_lambda`. Python convention is lowercase words joined by `_` (MATLAB people often use camelCase; Python prefers snake_case).
+2. **Leading underscore `_name`** — "internal / private by convention." It signals "this is a helper, not part of the public interface; don't rely on it from outside." Examples in this repo: `_setup`, `_derived`, `_cb`, `_conv`, `_ring`. Python does *not* enforce it (you *can* still call it); it's a politeness signal. (`pytest` also uses it: a function named `_setup` is **not** collected as a test, only `test_*` are.)
+3. **Trailing underscore `name_`** — used to avoid clashing with a Python keyword or built-in name. E.g. you can't name a variable `class` (keyword), so people write `class_`; `type_`, `id_` avoid shadowing built-ins `type`/`id`. In `run_f1.py`, `x_` and `y_` use a trailing underscore as a mild "this is the raw 1-D axis" marker (and to avoid colliding with the 2-D `X`, `Y`). Not mandatory, just a habit.
 
-Bonus: **double underscores** `__init__`, `__name__` ("dunder") are Python *special*
-names with defined meanings — `__init__` is the constructor; `__name__` is the module's
-name (see D.7).
+Bonus: **double underscores** `__init__`, `__name__` ("dunder") are Python *special* names with defined meanings — `__init__` is the constructor; `__name__` is the module's name (see D.7).
 
 ### D.6 `or` for defaults, and "truthiness"
 
@@ -752,13 +725,9 @@ R_cyl = P["R_cyl"] or 0.5*lam0
 # if P["R_cyl"] is None/0/empty -> use 0.5*lam0; otherwise use P["R_cyl"]
 ```
 
-So yes: "if there's no usable `R_cyl`, fall back to `0.5*lam0`." Python treats these as
-**falsy**: `None`, `0`, `0.0`, `""` (empty string), `[]`/`{}` (empty containers), `False`.
-Everything else is **truthy**.
+So yes: "if there's no usable `R_cyl`, fall back to `0.5*lam0`." Python treats these as **falsy**: `None`, `0`, `0.0`, `""` (empty string), `[]`/`{}` (empty containers), `False`. Everything else is **truthy**.
 
-> ⚠️ Gotcha: because `0` is falsy, `x or default` will *replace a legitimate zero*. Fine
-> for `R_cyl` (a radius is never 0), but for values where 0 is valid, use the explicit
-> `x if x is not None else default` instead.
+> ⚠️ Gotcha: because `0` is falsy, `x or default` will *replace a legitimate zero*. Fine for `R_cyl` (a radius is never 0), but for values where 0 is valid, use the explicit `x if x is not None else default` instead.
 
 ### D.7 File paths and imports: `__file__`, `os.path`, `sys.path`
 
@@ -767,26 +736,17 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ```
 
 Read it inside-out:
-- `__file__` — a built-in variable: the path of the current `.py` file, e.g.
-  `.../mwi/scripts/run_f1.py`.
+- `__file__` — a built-in variable: the path of the current `.py` file, e.g. `.../mwi/scripts/run_f1.py`.
 - `os.path.abspath(__file__)` — make it absolute (full path from the drive root).
 - `os.path.dirname(p)` — drop the last component, i.e. **go up one folder**:
-  - `.../mwi/scripts/run_f1.py` → `dirname` → `.../mwi/scripts`
-  - `.../mwi/scripts` → `dirname` again → `.../mwi`  ← the repo root
-- So **two `dirname`s** because the script is *two levels deep* (`mwi/scripts/run_f1.py`):
-  one hop to `scripts`, a second to the repo root `mwi`.
+- `.../mwi/scripts/run_f1.py` → `dirname` → `.../mwi/scripts`
+- `.../mwi/scripts` → `dirname` again → `.../mwi`  ← the repo root
+- So **two `dirname`s** because the script is *two levels deep* (`mwi/scripts/run_f1.py`): one hop to `scripts`, a second to the repo root `mwi`.
 
-**How to decide how many `dirname`s:** count the folders from the file *up to* the target.
-A file at `repo/a/b/c/run.py` needs three `dirname`s to reach `repo`. (Each `dirname` =
-one `..` in path terms.)
+**How to decide how many `dirname`s:** count the folders from the file *up to* the target. A file at `repo/a/b/c/run.py` needs three `dirname`s to reach `repo`. (Each `dirname` = one `..` in path terms.)
 
-- `sys.path` is Python's **list of folders it searches when you `import`**. `insert(0, ...)`
-  puts the repo root at the front, so `import mwisim...` finds the `mwisim/` package there.
-- **"works with no `pip install`"**: normally you'd run `pip install -e .` so Python knows
-  where `mwisim` lives. By prepending the repo root to `sys.path` at runtime, the script
-  makes `import mwisim` resolve *without* installing anything — handy offline / behind a
-  proxy. (Tests use `python -m pytest`, which adds the current directory to `sys.path` for
-  the same reason.)
+- `sys.path` is Python's **list of folders it searches when you `import`**. `insert(0, ...)` puts the repo root at the front, so `import mwisim...` finds the `mwisim/` package there.
+- **"works with no `pip install`"**: normally you'd run `pip install -e .` so Python knows where `mwisim` lives. By prepending the repo root to `sys.path` at runtime, the script makes `import mwisim` resolve *without* installing anything — handy offline / behind a proxy. (Tests use `python -m pytest`, which adds the current directory to `sys.path` for the same reason.)
 
 ### D.8 `matplotlib.use("Agg")`
 
@@ -795,17 +755,11 @@ import matplotlib
 matplotlib.use("Agg")
 ```
 
-matplotlib has interchangeable **backends** — the engine that turns a figure into pixels.
-`"Agg"` is a *non-interactive* backend that renders straight to an image file (PNG) with
-**no GUI window**. You select it when running as a script / on a headless or remote machine
-(no display), so `fig.savefig(...)` works and nothing tries to pop up a window. Must be set
-*before* `import matplotlib.pyplot as plt`.
+matplotlib has interchangeable **backends** — the engine that turns a figure into pixels. `"Agg"` is a *non-interactive* backend that renders straight to an image file (PNG) with **no GUI window**. You select it when running as a script / on a headless or remote machine (no display), so `fig.savefig(...)` works and nothing tries to pop up a window. Must be set *before* `import matplotlib.pyplot as plt`.
 
 ### D.9 Reading `run_f2.py`: `do_dense`, `bench()`, `main()`
 
-`do_dense` is just a **boolean flag** (a parameter that's `True`/`False`) meaning "should I
-also run the slow dense path for comparison?" — set `False` for the big grids where the
-dense matrix won't fit in RAM.
+`do_dense` is just a **boolean flag** (a parameter that's `True`/`False`) meaning "should I also run the slow dense path for comparison?" — set `False` for the big grids where the dense matrix won't fit in RAM.
 
 `bench(n_side, eps_r=2.0, do_dense=True)` builds one problem and **times both solver paths**:
 
@@ -841,10 +795,7 @@ def bench(n_side, eps_r=2.0, do_dense=True):
     return row                                     # one table row
 ```
 
-Key bits: `time.perf_counter()` = high-resolution stopwatch (call twice, subtract);
-`row` is a dict accumulating one benchmark row; `row.update(key=val, ...)` adds entries;
-`del D; gc.collect()` immediately releases the huge matrix so the next size has memory;
-`np.nan` ("not a number") is a placeholder for "not measured."
+Key bits: `time.perf_counter()` = high-resolution stopwatch (call twice, subtract); `row` is a dict accumulating one benchmark row; `row.update(key=val, ...)` adds entries; `del D; gc.collect()` immediately releases the huge matrix so the next size has memory; `np.nan` ("not a number") is a placeholder for "not measured."
 
 `main()` drives the sweep and plots:
 
@@ -869,18 +820,11 @@ def main():
     print(headline)
 ```
 
-`[r["N"] for r in rows]` is a **list comprehension** — "make a list of `r["N"]` for each
-`r` in `rows`" (MATLAB: `arrayfun`/a loop building a vector). `plt.subplots(1,2)` returns a
-figure and two axes; `loglog` plots on logarithmic x and y (so a power law looks like a
-straight line). The `f"{x:>9.3f}"` in the prints are **f-strings** with format specs
-(`>9.3f` = right-aligned, width 9, 3 decimals).
+`[r["N"] for r in rows]` is a **list comprehension** — "make a list of `r["N"]` for each `r` in `rows`" (MATLAB: `arrayfun`/a loop building a vector). `plt.subplots(1,2)` returns a figure and two axes; `loglog` plots on logarithmic x and y (so a power law looks like a straight line). The `f"{x:>9.3f}"` in the prints are **f-strings** with format specs (`>9.3f` = right-aligned, width 9, 3 decimals).
 
 ### D.10 Reading the tests: `s["centers"]` and `np.allclose`
 
-`s` is a **dict** returned by `_setup()`. `s["centers"]` is **dict indexing** — "look up
-the value stored under the key `"centers"`." It is *not* creating a string; the quotes just
-write the key (which happens to be a string). MATLAB analogy: a struct field `s.centers`,
-or a `containers.Map` lookup `s('centers')`.
+`s` is a **dict** returned by `_setup()`. `s["centers"]` is **dict indexing** — "look up the value stored under the key `"centers"`." It is *not* creating a string; the quotes just write the key (which happens to be a string). MATLAB analogy: a struct field `s.centers`, or a `containers.Map` lookup `s('centers')`.
 
 ```python
 s = _setup()
@@ -888,19 +832,177 @@ centers = s["centers"]      # fetch the (N,2) array stored under "centers"
 k_b     = s["k_b"]          # fetch the wavenumber
 ```
 
-`np.allclose(a, b)` returns `True` if `a` and `b` are **equal within a small floating-point
-tolerance** (default ~1e-8). You use it instead of `==` because floating-point arithmetic
-almost never gives bit-exact equality:
+`np.allclose(a, b)` returns `True` if `a` and `b` are **equal within a small floating-point tolerance** (default ~1e-8). You use it instead of `==` because floating-point arithmetic almost never gives bit-exact equality:
 
 ```python
 np.allclose(np.abs(E_inc), 1.0)   # "is |E_inc| ≈ 1 everywhere?" -> True/False
 ```
 
-Here `np.abs(E_inc)` is the magnitude of every element; comparing to `1.0` checks the plane
-wave has unit amplitude (T2). A bare `np.abs(E_inc) == 1.0` would fail on rounding;
-`allclose` is the correct floating-point "equal."
+Here `np.abs(E_inc)` is the magnitude of every element; comparing to `1.0` checks the plane wave has unit amplitude (T2). A bare `np.abs(E_inc) == 1.0` would fail on rounding; `allclose` is the correct floating-point "equal."
 
 ---
 
-*Appendix D added 2026-06-17 for newcomer onboarding. Pair it with Appendix A (FAQ) and
-Appendices B/C (drivers, tests).*
+*Appendix D added 2026-06-17 for newcomer onboarding. Pair it with Appendix A (FAQ) and Appendices B/C (drivers, tests).*
+
+---
+
+## Appendix E — Krylov solvers from zero (CG · BiCGStab · CGLS · LSQR · LSMR)
+
+> The iterative-solver family the project depends on: F2 solves the square system $(\mathbf I-\mathbf D)\mathbf E=\mathbf E^{\text{inc}}$ with **BiCGStab**; I1 solves the rectangular least-squares $\mathbf A\chi=\mathbf d$ with **LSQR/LSMR**. This appendix builds them from one shared idea, with the algorithm steps, the derivations, and the parameter values you actually set.
+
+### E.0 The one shared idea — the Krylov subspace
+
+To solve $Ax=b$ without inverting or factorizing $A$, use only the one thing you can do cheaply: multiply a vector by $A$ (a *matvec*). Starting from $b$ and repeatedly multiplying builds the sequence $b,\,Ab,\,A^2b,\,\dots$, whose span is the **Krylov subspace**
+
+$$\mathcal K_k(A,b)=\operatorname{span}\{b,\,Ab,\,A^2b,\,\dots,\,A^{k-1}b\}.$$
+
+Why the solution lives there: by the Cayley–Hamilton theorem $A^{-1}$ equals a polynomial in $A$ of degree $\le n-1$, so $x^\*=A^{-1}b=q(A)\,b\in\mathcal K_n$. Every Krylov method is really *choosing a low-degree polynomial* $p_k$ so that $x_k=p_k(A)b$ approximates $x^\*$; it converges in few steps when that polynomial can be small on the spectrum — i.e. when **eigenvalues/singular values are clustered** (the reason F2's iteration count is a flat 7). The methods differ only in two choices: **what structure $A$ has** (symmetric? square?) and **what "best $x_k$ in $\mathcal K_k$" means** (minimize which quantity).
+
+The family tree:
+
+```
+CG               (symmetric positive definite, square)
+ ├── nonsymmetric square:  BiCG → CGS → BiCGStab        (+ GMRES)   ← F2: (I − D) E = E_inc
+ └── least squares (rect): CGLS = CG on normal eqns → LSQR → LSMR   ← I1: A χ = d
+```
+
+### E.1 CG (Conjugate Gradient) — the ancestor
+
+**Applies to:** $A$ symmetric positive definite (SPD), square.
+
+**Derivation (why it works).** Solving $Ax=b$ is equivalent to minimizing the quadratic
+
+$$\phi(x)=\tfrac12\,x^{\mathsf T}Ax-b^{\mathsf T}x,\qquad \nabla\phi(x)=Ax-b=-r,$$
+
+because $A$ SPD makes $\phi$ a convex bowl whose unique minimum is at $\nabla\phi=0\Rightarrow Ax=b$. Steepest descent (step along $r$) zig-zags. CG instead uses search directions $p_0,p_1,\dots$ that are **$A$-conjugate**, $p_i^{\mathsf T}Ap_j=0$ for $i\ne j$. Conjugacy means a move along $p_k$ never spoils the minimization already achieved along previous directions, so an exact line search along each direction reaches the exact minimum in at most $n$ steps. Enforcing conjugacy plus exact line search makes the residuals mutually orthogonal ($r_i^{\mathsf T}r_j=0$), and those two facts collapse the bookkeeping into a **three-term short recurrence** — one matvec, a few dot products, no stored history.
+
+**Algorithm.**
+
+```
+x0 given (often 0);  r0 = b − A x0;  p0 = r0
+for k = 0, 1, 2, ...:
+    αk = (rk·rk) / (pk·(A pk))          # exact line-search step length
+    x_{k+1} = xk + αk pk
+    r_{k+1} = rk − αk (A pk)            # residual update (no extra matvec)
+    if ||r_{k+1}|| ≤ rtol·||b||: stop
+    βk = (r_{k+1}·r_{k+1}) / (rk·rk)    # keeps directions A-conjugate
+    p_{k+1} = r_{k+1} + βk pk
+```
+
+**Cost / convergence.** One matvec `A pk` per iteration. Error in the $A$-norm shrinks as
+
+$$\lVert e_k\rVert_A \le 2\left(\frac{\sqrt\kappa-1}{\sqrt\kappa+1}\right)^{\!k}\lVert e_0\rVert_A,\qquad \kappa=\kappa(A)\ \text{(condition number)},$$
+
+so well-conditioned or clustered spectra converge fast. **Why SPD is required:** non-symmetric $A$ breaks the $A$-inner-product (no real conjugacy), and indefinite $A$ makes $\phi$ a saddle, not a bowl.
+
+**Parameters:** `rtol` (relative residual stop, e.g. 1e-8), `maxiter` (cap, $\le n$), `x0` (warm start), optional preconditioner `M` (solve $M^{-1}Ax=M^{-1}b$ to cluster the spectrum).
+
+### E.2 Nonsymmetric square systems: BiCG → CGS → BiCGStab
+
+F2's matrix $(\mathbf I-\mathbf D)$ is square but **complex and nonsymmetric**, so CG is out. A theorem (Faber–Manteuffel) says you cannot keep *both* CG's short recurrence *and* its optimality for general nonsymmetric $A$ — you must give up one. Two escapes:
+
+- **GMRES** keeps optimality (minimizes $\lVert b-Ax\rVert$ over $\mathcal K_k$ via Arnoldi) but stores all $k$ basis vectors → memory grows, hence **restarting**, GMRES($m$). F2 offers it as an option; `callback_type="pr_norm"` makes it report the residual norm per inner iteration.
+- **BiCG family** keeps the short recurrence, gives up optimality:
+- **BiCG** runs two coupled sequences, one with $A$ and one with $A^{\mathsf H}$ (a "shadow"), producing bi-orthogonal residuals. Needs $A^{\mathsf H}$; can break down (a denominator hits zero).
+- **CGS** ("CG-squared") squares the BiCG polynomial to avoid $A^{\mathsf H}$ and roughly double the contraction per step — but the residual is erratic.
+- **BiCGStab** (van der Vorst, 1992) adds, after each BiCG-type update, a **one-step local GMRES** (a steepest-descent minimization with parameter $\omega_k$) that *smooths* the residual → robust, monotone-ish convergence. This is F2's default.
+
+**BiCGStab algorithm.**
+
+```
+r0 = b − A x0;   choose r̂0 (e.g. r̂0 = r0)
+ρ0 = α = ω0 = 1;   v0 = p0 = 0
+for k = 1, 2, ...:
+    ρk = r̂0·r_{k−1};   β = (ρk/ρ_{k−1})·(α/ω_{k−1})
+    pk = r_{k−1} + β (p_{k−1} − ω_{k−1} v_{k−1})
+    vk = A pk                                   # matvec 1
+    α  = ρk / (r̂0·vk)
+    s  = r_{k−1} − α vk
+    if ||s|| ≤ tol·||b||: x_k = x_{k−1} + α pk; stop
+    t  = A s                                    # matvec 2
+    ωk = (t·s) / (t·t)                          # the stabilizing 1-step GMRES
+    x_k = x_{k−1} + α pk + ωk s
+    r_k = s − ωk t
+    if ||r_k|| ≤ tol·||b||: stop
+```
+
+**Cost:** **two** matvecs per iteration ($A p_k$ and $As$). **Parameters:** `rtol`/`tol`, `maxiter`, `x0`, preconditioner `M`. F2 uses `tol=1e-8`; no preconditioner because $(\mathbf I-\mathbf D)$ already has its spectrum clustered near 1 (weak-to-moderate contrast), so it converges in ~7.
+
+### E.3 Least squares: the normal equations and CGLS
+
+I1's $\mathbf A$ is **rectangular** ($(N_v M)\times N$) and ill-posed — this is a least-squares problem $\min_x\lVert Ax-b\rVert^2$, not a square solve. Setting the gradient to zero,
+
+$$\nabla\big(\lVert Ax-b\rVert^2\big)=2A^{\mathsf H}(Ax-b)=0\ \Longrightarrow\ A^{\mathsf H}A\,x=A^{\mathsf H}b\quad(\text{the **normal equations}}).$$
+
+$A^{\mathsf H}A$ is SPD (if $A$ has full column rank), so you *could* run CG on it — that is **CGLS**, with the crucial rule that you **never form $A^{\mathsf H}A$**; you apply it as two matvecs $A^{\mathsf H}(A v)$.
+
+**CGLS algorithm.**
+
+```
+x0 = 0;   r0 = b − A x0;   s0 = Aᴴ r0;   p0 = s0;   γ0 = ||s0||²
+for k = 0, 1, 2, ...:
+    qk = A pk                        # matvec 1
+    αk = γk / ||qk||²
+    x_{k+1} = xk + αk pk
+    r_{k+1} = rk − αk qk             # data-space residual b − A x
+    s_{k+1} = Aᴴ r_{k+1}            # matvec 2 — gradient / normal-eqn residual
+    γ_{k+1} = ||s_{k+1}||²
+    βk = γ_{k+1} / γk
+    p_{k+1} = s_{k+1} + βk pk
+```
+
+**Cost:** two matvecs per iteration ($A$ and $A^{\mathsf H}$). **Tikhonov** $\min\lVert Ax-b\rVert^2+\mu\lVert x\rVert^2$ is obtained by replacing $A,b$ with the *augmented* system
+
+$$\tilde A=\begin{bmatrix}A\\\sqrt{\mu}\,I\end{bmatrix},\qquad \tilde b=\begin{bmatrix}b\\0\end{bmatrix},$$
+
+whose normal equations are exactly $(A^{\mathsf H}A+\mu I)x=A^{\mathsf H}b$. **Drawback:** CGLS effectively works with $A^{\mathsf H}A$, whose condition number is $\kappa(A)^2$ — bad for ill-posed $A$ in finite precision. That is what LSQR fixes.
+
+### E.4 LSQR — Golub–Kahan bidiagonalization (the stable CGLS)
+
+**Idea (Paige & Saunders, 1982):** get the same answer as CGLS but **without ever squaring the condition number**, by building orthonormal bases with the **Golub–Kahan bidiagonalization** of $A$ (a Lanczos process on $A$ and $A^{\mathsf H}$ directly).
+
+**Bidiagonalization recurrence.** Initialize $\beta_1 u_1=b$ (i.e. $\beta_1=\lVert b\rVert$, $u_1=b/\beta_1$), $\alpha_1 v_1=A^{\mathsf H}u_1$. Then for $k=1,2,\dots$
+
+$$\beta_{k+1}u_{k+1}=A v_k-\alpha_k u_k,\qquad \alpha_{k+1}v_{k+1}=A^{\mathsf H}u_{k+1}-\beta_{k+1}v_k,$$
+
+where $\alpha_k,\beta_k>0$ normalize $u_k,v_k$ to unit length. After $k$ steps this yields orthonormal $U_k=[u_1\dots u_k]$, $V_k=[v_1\dots v_k]$ and a **lower-bidiagonal** $B_k$ (diagonal $\alpha_i$, sub-diagonal $\beta_{i+1}$) with $AV_k=U_{k+1}B_k$. The least-squares problem reduces to the tiny
+
+$$\min_{y}\ \big\lVert B_k\,y-\beta_1 e_1\big\rVert,\qquad x_k=V_k\,y_k,$$
+
+solved incrementally with **Givens rotations** (QR of the bidiagonal), giving a short recurrence for $x_k$ — no growing storage. Because everything is done on $A$ (not $A^{\mathsf H}A$), the effective condition number is $\kappa(A)$, not $\kappa(A)^2$.
+
+**Damping (Tikhonov) for free.** Passing `damp = λ` solves
+
+$$\min_x\ \big\lVert Ax-b\big\rVert^2+\lambda^2\lVert x\rVert^2,$$
+
+so for the Tikhonov weight $\mu$ in I1 set $\lambda=\sqrt{\mu}$ (`damp=np.sqrt(mu)`).
+
+**`scipy.sparse.linalg.lsqr(A, b, ...)` parameters:**
+- `damp` — Tikhonov $\lambda=\sqrt{\mu}$ (default 0).
+- `atol`, `btol` — stopping tolerances on the (normalized) residual; ~1e-6 typical, tighten to 1e-8/1e-10 for the inverse-crime test.
+- `conlim` — stop if the estimated $\kappa(A)$ exceeds this (guards hopeless conditioning).
+- `iter_lim` — max iterations (set generously; ill-posed problems often want *early* stopping, see E.6).
+- returns `x` and a stop reason + estimates (iters, residual norms, condition estimate).
+
+### E.5 LSMR — the newer, often-better cousin
+
+**LSMR** (Fong & Saunders, 2010) is also Golub–Kahan-based, but it applies the QR so that the **normal-equation residual $\lVert A^{\mathsf H}r_k\rVert$ decreases monotonically** (LSQR only makes $\lVert r_k\rVert$ behave monotonically). Practical consequence: with a loose tolerance LSMR can **stop earlier and more safely**, which is exactly what you want on ill-posed inverse problems. Same interface and parameters as LSQR (`damp`, `atol`, `btol`, `conlim`, `maxiter`). For I1 it is the recommended default; LSQR is the fallback.
+
+### E.6 Parameter & method-choice guide (practical)
+
+- **Pick by structure:** SPD square → **CG**; general/complex square → **BiCGStab** (or GMRES if BiCGStab stalls); rectangular / least-squares / ill-posed → **LSMR** (then LSQR, then CGLS).
+- **`rtol`/`atol`/`btol`:** the convergence gate. F2 uses `tol=1e-8`. For I1's inverse-crime unit test, tighten (1e-10) to prove the linear algebra; for physical data, looser is fine (the model error dominates).
+- **`maxiter`/`iter_lim`:** a safety cap. For well-conditioned square systems set generously; the method stops early on its own.
+- **`damp = √μ` (LSQR/LSMR):** the Tikhonov knob. Larger μ ⇒ smoother, more biased toward zero; smaller μ ⇒ closer data fit, noisier. Tune by the L-curve or discrepancy principle.
+- **`x0` warm start:** reuse the previous solution — DBIM (I2) will warm-start each outer iteration from the last χ̂.
+- **Preconditioner `M`:** for CG/BiCGStab, an approximate inverse that clusters the spectrum cuts iterations; F2 needs none (spectrum already near 1).
+- **Early stopping = regularization (LSQR/LSMR on ill-posed):** the iteration recovers stable, large-singular-value components first and only later fits noise (*semi-convergence*), so the iteration count itself regularizes — stop before the noise creeps in, in addition to `damp`.
+
+### E.7 How this maps onto the repo
+
+- **F2 — `GreenFFT.solve_total_field`:** square, complex, nonsymmetric $(\mathbf I-\mathbf D)$, spectrum clustered near 1 ⇒ **BiCGStab** (GMRES optional), `tol=1e-8`, no preconditioner, ~7 iters. Each matvec = two FFTs (Appendix A.5).
+- **I1 — `BornInverter.reconstruct`:** rectangular, ill-posed, multiview $\mathbf A$ ⇒ **LSMR/LSQR** with `damp=√μ`, using `A_op` (matvec) and `AH_op` (rmatvec). The adjoint test (I1.2) is what makes these solvers trustworthy — they assume `rmatvec` is the exact $A^{\mathsf H}$.
+
+---
+
+*Appendix E added 2026-06-18. Pair with Appendix A.5 (operator/solver FAQ), the I1 tutorial §4–§5, and the F2 tutorial/milestone.*

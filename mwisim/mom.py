@@ -18,7 +18,7 @@ def build_D(centers: np.ndarray, chi: np.ndarray, k_b: complex, d: float) -> np.
     Off-diagonal (m != n):
         D_mn = -chi_n * (j*pi*k_b*a/2) * J1(k_b a) * H0^(2)(k_b * rho_mn)
     Self  (m == n):
-        D_nn = -chi_n * (j*pi*k_b*a/2) * H1^(2)(k_b a)
+        D_nn = -chi_n * (j*pi*k_b*a/2) * H1^(2)(k_b a) - chi_n
     with a = d/sqrt(pi), rho_mn = |r_m - r_n|.
 
     TODO (F1 §3.4):
@@ -27,19 +27,6 @@ def build_D(centers: np.ndarray, chi: np.ndarray, k_b: complex, d: float) -> np.
       3. overwrite diagonal with H1^(2) self term.
       4. multiply each column n by chi_n and the prefactor.
     scipy: jv(1,.), hankel2(0,.), hankel2(1,.).
-    """
-    """
-    a = d / np.sqrt(np.pi)
-    N = centers.shape[0]
-    D = np.zeros((N, N), dtype=complex)
-    for n in range(N):
-        for m in range(N):
-            rho_mn = np.linalg.norm(centers[m] - centers[n])
-            if n != m:
-                D[m, n] = -chi[n] * (1j * np.pi * k_b * a / 2) * jv(1, k_b * a) * hankel2(0, k_b * rho_mn)
-            else:
-                D[m, n] = -chi[n] * (1j * np.pi * k_b * a / 2) * hankel2(1, k_b * a)
-    return D
     """
     a = d / np.sqrt(np.pi)
     pref = -(1j * np.pi * k_b * a / 2)

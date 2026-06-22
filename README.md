@@ -1,14 +1,10 @@
 # phoenix-mwi
 
-2D/3D microwave imaging (MWI) forward & inverse simulation, aimed at breast and
-bone-density detection research. Companion theory notes live in `docs/`.
+2D/3D microwave imaging (MWI) forward & inverse simulation, aimed at breast and bone-density detection research. Companion theory notes live in `docs/`.
 
-**Current stage: F2 — CG-FFT acceleration ✅ done. Matrix-free `GreenFFT` in
-`mwisim/operators.py` solves `(I - D)E = E_inc` in O(N log N); validated against the
-F1 dense solve and Mie (`tests/test_f2.py`, T9-T14). Next: I1 — Born inversion.**
+**Current stage: F2 — CG-FFT acceleration ✅ done. Matrix-free `GreenFFT` in `mwisim/operators.py` solves `(I - D)E = E_inc` in O(N log N); validated against the F1 dense solve and Mie (`tests/test_f2.py`, T9-T14). Next: I1 — Born inversion.**
 
-> Built in public · physics-first · every stage validated against an analytic
-> solution or a public benchmark.
+> Built in public · physics-first · every stage validated against an analytic solution or a public benchmark.
 
 ## Repository layout
 
@@ -35,8 +31,7 @@ phoenix-mwi/
 
 ## Install (offline-friendly)
 
-Only `numpy scipy matplotlib pytest` are required. **No `pip install -e .` needed** —
-`scripts/run_f1.py` adds the repo root to `sys.path`, and tests run with `python -m pytest`.
+Only `numpy scipy matplotlib pytest` are required. **No `pip install -e .` needed** — `scripts/run_f1.py` adds the repo root to `sys.path`, and tests run with `python -m pytest`.
 
 ```bash
 python -c "import numpy, scipy, matplotlib, pytest; print('ok')"
@@ -52,9 +47,7 @@ python -m pytest -q          # T1-T8 self-tests; all green == F1 passes
 python scripts/run_f1.py     # writes docs/fig_pointwise.png and docs/fig_convergence.png
 ```
 
-`fig_pointwise.png` overlays the MoM scattered field (dots) on the analytic Mie
-solution (line); `fig_convergence.png` shows relative L2 error vs cells-per-wavelength
-on a log-log axis (monotone decreasing).
+`fig_pointwise.png` overlays the MoM scattered field (dots) on the analytic Mie solution (line); `fig_convergence.png` shows relative L2 error vs cells-per-wavelength on a log-log axis (monotone decreasing).
 
 ## Running F2
 
@@ -63,9 +56,7 @@ python -m pytest tests/test_f2.py -q   # T9-T14; all green == F2 passes
 python scripts/run_f2.py               # writes docs/fig_f2_scaling.png
 ```
 
-`fig_f2_scaling.png` plots wall-clock time and memory vs N for the matrix-free CG-FFT
-solver against the dense MoM solve. The dense curve cuts off where the N×N matrix stops
-fitting in RAM; the CG-FFT curve keeps going (N=102400 in ~0.5 s, 7 iterations).
+`fig_f2_scaling.png` plots wall-clock time and memory vs N for the matrix-free CG-FFT solver against the dense MoM solve. The dense curve cuts off where the N×N matrix stops fitting in RAM; the CG-FFT curve keeps going (N=102400 in ~0.5 s, 7 iterations).
 
 ## Roadmap
 
@@ -79,21 +70,14 @@ fitting in RAM; the CG-FFT curve keeps going (N=102400 in ~0.5 s, 7 iterations).
 
 ## Validation philosophy
 
-Rather than chasing agreement with real measurements (no phantom / no clinical data
-here), each stage is checked against an **analytic solution** (Mie) and **public
-benchmarks** (UWCEM phantoms, Institut Fresnel measured datasets). This yields
-credible "validated" evidence from simulation alone.
+Rather than chasing agreement with real measurements (no phantom / no clinical data here), each stage is checked against an **analytic solution** (Mie) and **public benchmarks** (UWCEM phantoms, Institut Fresnel measured datasets). This yields credible "validated" evidence from simulation alone.
 
 ## How to cite
 
-If you use phoenix-mwi in academic work, please cite it. GitHub shows a "Cite this
-repository" button generated from `CITATION.cff`; or cite as:
+If you use phoenix-mwi in academic work, please cite it. GitHub shows a "Cite this repository" button generated from `CITATION.cff`; or cite as:
 
-> Chang, C. (2026). *phoenix-mwi: a pluggable platform for 2D/3D microwave imaging and
-> tomography* (Version 0.1.0) [Software]. https://github.com/Dr-CharleyChang/phoenix-mwi
+> Chang, C. (2026). *phoenix-mwi: a pluggable platform for 2D/3D microwave imaging and tomography* (Version 0.1.0) [Software]. https://github.com/Dr-CharleyChang/phoenix-mwi
 
 ## License
 
-Apache License 2.0 (see `LICENSE` and `NOTICE`). Free for academic, research, and
-commercial use; you must retain the copyright and attribution notices when
-redistributing. Academic citation is requested via `CITATION.cff` (see "How to cite").
+Apache License 2.0 (see `LICENSE` and `NOTICE`). Free for academic, research, and commercial use; you must retain the copyright and attribution notices when redistributing. Academic citation is requested via `CITATION.cff` (see "How to cite").
