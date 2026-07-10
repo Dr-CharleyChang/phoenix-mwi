@@ -1,7 +1,5 @@
 """I1 self-test checklist (I1.1–I1.5): Born linear inversion.
 
-RED until you implement the TODOs in ``mwisim/inverse/born.py``. Make them green one at a
-time — that is your I1 progress bar. Tutorial: docs/I1_Tutorial_Born-linear-inversion.md.
 Run:  python -m pytest tests/test_i1.py -q
 """
 from __future__ import annotations

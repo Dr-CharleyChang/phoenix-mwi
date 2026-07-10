@@ -1,8 +1,4 @@
-"""Validation metrics and convergence study.
-
-Tutorial ref: F1 §8.  rel_l2_error is provided (it is just a helper, not the
-learning content); convergence_study is left as a stub to wire together.
-"""
+"""Validation metrics and convergence study."""
 from __future__ import annotations
 
 import numpy as np
@@ -27,10 +23,11 @@ def convergence_study(d_list, params: dict) -> tuple[np.ndarray, np.ndarray]:
     Returns
     -------
     n_per_lambda : (K,) float    in-medium cells-per-wavelength for each d
-    errs : (K,) float            relative L2 error for each d
+    errs : (K,) float
+        Relative L2 error for each d.
 
-    TODO (F1 §8): loop over d_list, call the mwisim functions, collect errors.
-    `params` holds f, eps_r, eps_b, R_cyl, R_obs, N_rx, domain_size, etc.
+    ``params`` holds ``f``, ``eps_r``, ``eps_b``, ``R_cyl``, ``R_obs``,
+    ``N_rx``, ``domain_size``, and related setup values.
     """
     from .grid import make_grid, assign_contrast
     from .mom import build_D, incident_plane_wave, solve_total_field, scattered_field

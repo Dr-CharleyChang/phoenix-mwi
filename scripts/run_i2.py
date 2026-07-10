@@ -1,7 +1,6 @@
 """I2 driver: DBIM — reconstruct a strong-scatterer contrast map and plot it.
 
-Run AFTER implementing the TODOs in mwisim/inverse/dbim.py
-(simulate_scattered_data, DBIMInverter.reconstruct):
+Run:
     python scripts/run_i2.py
 
 Outputs:

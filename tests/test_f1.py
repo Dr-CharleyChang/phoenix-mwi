@@ -1,9 +1,6 @@
 """F1 self-test checklist (T1-T8) as executable tests.
 
-These are RED until you implement the stubs in mwisim/. Make them green one by
-one — that is your F1 progress bar. Run:  pytest -q
-
-Maps to docs/F1 tutorial §11 (self-test checklist).
+Run:  pytest -q
 """
 from __future__ import annotations
 
@@ -52,14 +49,24 @@ def test_T2_incident_unit_magnitude():
     assert np.allclose(np.abs(E_inc), 1.0)
 
 
-# ---------- T3: Green depends only on distance (kernel symmetry) ----------
-def test_T3_green_symmetric_in_distance():
-    k_b = 2 * np.pi
-    assert green_2d(k_b, 0.3) == pytest.approx(green_2d(k_b, 0.3))
-    # two equal distances -> equal values (sanity on vectorization)
-    R = np.array([0.2, 0.2, 0.5])
-    g = green_2d(k_b, R)
-    assert g[0] == pytest.approx(g[1])
+# ---------- T3: Green's function VALUE + distance dependence ----------
+def test_T3_green_value_and_distance():
+    # (a) exact value check (independent of the implementation): G(R) = (1/4j) H0^(2)(k_b R).
+    #     With k_b=R=1: H0^(2)(1) = J0(1) - j Y0(1) = 0.7651976866 - 0.0882569642 j, so
+    #     G = (1/4j)(J0 - j Y0) = -Y0/4 - j J0/4 = -0.0220642411 - 0.1912994216 j.
+    #     This pins the prefactor (1/4j), the order (0), and the e^{+jωt}/H^(2) convention —
+    #     a wrong order, a 1/4 instead of 1/4j, or H^(1) would all fail here.
+    assert green_2d(1.0, 1.0) == pytest.approx(-0.0220642411 - 0.1912994216j, abs=1e-7)
+
+    # (b) far-field magnitude sanity (truly independent of Hankel code):
+    #     |H0^(2)(x)| ~ sqrt(2/(pi x)) for large x  =>  |G| ~ (1/4) sqrt(2/(pi k_b R)).
+    k_b, R = 2 * np.pi, 5.0
+    assert abs(green_2d(k_b, R)) == pytest.approx(0.25 * np.sqrt(2 / (np.pi * k_b * R)), rel=0.05)
+
+    # (c) depends only on distance, and different distances give different values
+    g = green_2d(k_b, np.array([0.2, 0.2, 0.5]))
+    assert g[0] == pytest.approx(g[1])      # equal distance -> equal value (vectorization)
+    assert g[0] != pytest.approx(g[2])      # different distance -> different value
 
 
 # ---------- T4: weak-scatterer sanity (E_tot ~ E_inc) ----------

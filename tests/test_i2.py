@@ -1,10 +1,5 @@
 """I2 self-test checklist (I2.1–I2.5) as executable tests — DBIM.
 
-RED until you implement the TODOs in ``mwisim/inverse/dbim.py``:
-    simulate_scattered_data  ·  DBIMInverter.reconstruct
-(the GIVEN helpers distorted_green_matrix / build_frechet_operator make I2.2/I2.5
-runnable already). Tutorial: docs/I2_Tutorial_Distorted-Born-iterative-method.md.
-
 Run:  python -m pytest tests/test_i2.py -q
 """
 from __future__ import annotations
@@ -25,8 +20,7 @@ from mwisim.inverse.dbim import (
 )
 
 
-# ---------- independent full-forward helpers (built from validated F1 code, ----------
-# ---------- so they don't depend on the TODO simulate_scattered_data) ----------------
+# ---------- independent full-forward helpers -----------------------------------------
 def _forward(data, chi):
     """Full nonlinear forward F(χ): stacked scattered data at the receivers."""
     centers, dS, k_b, rx = data["centers"], data["dS"], data["k_b"], data["rx"]

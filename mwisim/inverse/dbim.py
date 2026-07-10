@@ -1,20 +1,6 @@
-"""I2 — DBIM (Distorted Born Iterative Method): the nonlinear χ-map.
+"""DBIM (Distorted Born Iterative Method) for nonlinear contrast reconstruction.
 
-YOUR TASK (I2): implement the two TODO-marked pieces so ``tests/test_i2.py``
-(I2.1–I2.5) goes green. Tutorial: ``docs/I2_Tutorial_Distorted-Born-iterative-method.md``.
-
-What you implement (TODO):  simulate_scattered_data  ·  DBIMInverter.reconstruct
-What is GIVEN (don't change unless you want to):  distorted_green_matrix ·
-                            build_frechet_operator · make_dbim_problem ·
-                            DBIMInverter.__init__ + registration.
-
-Reuse: ``build_D`` / ``solve_total_field`` / ``scattered_field`` (mom.py),
-``green_matrix`` / ``BornOperator`` (born.py, I1), ``A_op``/``AH_op`` (operators.py).
-Convention e^{+jωt}/H^(2), single frequency, REAL background wavenumber k_b.
-
-DBIM in one line: I1 in an outer loop — at each step re-solve the full forward
-problem for the current χ, linearize around it (the *distorted* Born operator),
-take one regularized LSMR step on the data residual, repeat.  See tutorial §3–§5.
+Convention e^{+jωt}/H^(2), single frequency, real background wavenumber ``k_b``.
 """
 from __future__ import annotations
 
@@ -31,7 +17,7 @@ C0 = 299_792_458.0
 
 
 # --------------------------------------------------------------------------
-# The full nonlinear forward map  F(χ)  (TODO — I2 §2, §6)
+# The full nonlinear forward map F(χ)
 # --------------------------------------------------------------------------
 def simulate_scattered_data(centers, chi, k_b, d, dS, E_inc_set, rx):
     """Full forward map F(χ): stacked scattered data + the interior total fields.
@@ -53,15 +39,8 @@ def simulate_scattered_data(centers, chi, k_b, d, dS, E_inc_set, rx):
     Returns
     -------
     d_sim     : (N_v·M,) complex   stacked scattered field at receivers
-    E_tot_set : (N_v,N)  complex   total interior field per incidence
-
-    TODO (I2 §2):
-      1. D = build_D(centers, chi, k_b, d)                      # once, reused for all views
-      2. for each E_inc_i in E_inc_set:
-             E_tot_i = solve_total_field(D, E_inc_i)
-             block_i = scattered_field(rx, centers, chi, E_tot_i, k_b, dS)
-      3. d_sim = concatenate(blocks);  E_tot_set = stack(E_tot_i)
-    Target tests: I2.1 (consistency), and it powers I2.3/I2.4 via reconstruct.
+    E_tot_set : (N_v,N)  complex
+        Total interior field per incidence.
     """
     D = build_D(centers, chi, k_b, d)
     d_sim = np.zeros(rx.shape[0]*E_inc_set.shape[0], dtype=complex)
@@ -75,10 +54,10 @@ def simulate_scattered_data(centers, chi, k_b, d, dS, E_inc_set, rx):
 
 
 # --------------------------------------------------------------------------
-# The distorted Born (Fréchet) operator  (GIVEN — I2 §3, §4)
+# The distorted Born (Fréchet) operator
 # --------------------------------------------------------------------------
 def distorted_green_matrix(centers, chi, k_b, d, dS, rx, distorted=True):
-    """Distorted receiver×cell Green matrix G_tr^dist  (M, N).   [GIVEN — study, don't rewrite]
+    """Distorted receiver×cell Green matrix G_tr^dist  (M, N).
 
     Homogeneous receiver operator  S = k_b^2 dS G_tr  is bent *through the current
     object* χ by the multiple-scattering factor (I − D)^{-1} (tutorial §3–§4):
@@ -110,7 +89,7 @@ def distorted_green_matrix(centers, chi, k_b, d, dS, rx, distorted=True):
 
 
 def build_frechet_operator(centers, rx, E_tot_set, k_b, dS, G_tr_dist):
-    """Fréchet operator J of the forward map at the current χ.   [GIVEN — reuses I1]
+    """Fréchet operator J of the forward map at the current χ.
 
     J is I1's Born operator with two substitutions (tutorial §3):
     homogeneous G_tr → distorted G_tr^dist, and incident field → current TOTAL field.
@@ -123,7 +102,7 @@ def build_frechet_operator(centers, rx, E_tot_set, k_b, dS, G_tr_dist):
 
 
 # --------------------------------------------------------------------------
-# The inverter (reconstruct is TODO — I2 §5, §6)
+# The inverter
 # --------------------------------------------------------------------------
 @register("inverter", "dbim")
 class DBIMInverter(Inverter):
@@ -157,23 +136,6 @@ class DBIMInverter(Inverter):
             centers, dS, k_b, rx, E_inc_set, d   (and chi_true for tests).
         ``forward`` is unused (we re-simulate with MoM here); it's the platform hook.
         ``x0`` optional warm start (e.g. the I1 Born estimate); default zeros.
-
-        TODO (I2 §5):
-          d_side = sqrt(dS);  chi = zeros(N) (or x0.copy())
-          res_history = []
-          for n in range(max_outer):
-              d_sim, E_tot_set = simulate_scattered_data(centers, chi, k_b, d_side, dS, E_inc_set, rx)
-              delta_d = d_meas - d_sim
-              res = ||delta_d|| / ||d_meas||;  res_history.append(res)
-              if res < tol: break
-              G_tr_dist = distorted_green_matrix(centers, chi, k_b, d_side, dS, rx, self.distorted)
-              J = build_frechet_operator(centers, rx, E_tot_set, k_b, dS, G_tr_dist)
-              A = J.as_linear_operator()
-              # LSMR (maxiter=) / LSQR (iter_lim=) on the RESIDUAL delta_d, damp=sqrt(mu):
-              delta_chi = (spla.lsmr(A, delta_d, damp=sqrt(mu), maxiter=inner_iter))[0]  # or lsqr
-              chi = chi + self.step * delta_chi
-          return chi, {"outer_iters":..., "res_history":res_history, "mu":..., ...}
-        Targets: I2.3 (beats Born), I2.4 (residual decreases/converges).
         """
         d_side = np.sqrt(data["dS"]); 
         chi = x0.copy() if x0 is not None else np.zeros(data["centers"].shape[0], dtype=complex)
@@ -197,7 +159,7 @@ class DBIMInverter(Inverter):
 
 
 # --------------------------------------------------------------------------
-# Synthetic-problem assembler (GIVEN — reuses I1's physical forward data)
+# Synthetic-problem assembler
 # --------------------------------------------------------------------------
 def make_dbim_problem(eps_r=1.5, n_per_lambda=12, n_views=16, n_rx=40, f=1e9,
                       R_obs_factor=3.0) -> dict:

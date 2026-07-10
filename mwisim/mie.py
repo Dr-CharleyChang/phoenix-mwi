@@ -1,8 +1,7 @@
 """Analytic Mie series for a dielectric circular cylinder (TM / E-polarization).
 
-Tutorial ref: F1 §7.  This is the GROUND TRUTH used to validate the MoM solver.
-Convention e^{+jωt} / H^(2).  Get this RIGHT FIRST — if the truth is wrong,
-everything downstream is wrong.
+This is the reference solution used to validate the MoM solver.
+Convention e^{+jωt} / H^(2).
 """
 from __future__ import annotations
 import numpy as np
@@ -16,7 +15,6 @@ def mie_an(n: int, k_b: complex, k_1: complex, R_cyl: float) -> complex:
             / [k1 J'_n(k1 R) H^(2)_n(kb R) - kb J_n(k1 R) H^(2)'_n(kb R)]
 
     scipy.special: jv(n,x), jvp(n,x), hankel2(n,x), h2vp(n,x).
-    TODO (F1 §7).
     """
     x1, xb = k_1 * R_cyl, k_b * R_cyl
     num_ = k_1 * jvp(n, x1) * jv(n, xb)      - k_b * jv(n, x1) * jvp(n, xb)
@@ -43,12 +41,6 @@ def mie_scattered(
     Returns
     -------
     E_sc_mie : (Nrx,) complex
-
-    TODO (F1 §7):
-      1. rho, phi = polar(rx_points).
-      2. default Nmax if None.
-      3. sum series over n in [-Nmax, Nmax].
-      4. sanity: increase Nmax until result stops changing.
     """
     rho = np.hypot(rx_points[:, 0], rx_points[:, 1])
     phi = np.arctan2(rx_points[:, 1], rx_points[:, 0])

@@ -1,7 +1,4 @@
-"""Grid generation and contrast assignment.
-
-Tutorial refs: F1 §1 (physics setup), §3.1 (discretization).
-"""
+"""Grid generation and contrast assignment."""
 from __future__ import annotations
 
 import numpy as np
@@ -25,9 +22,6 @@ def make_grid(domain_size: float, d: float) -> tuple[np.ndarray, float]:
         (x, y) coordinates of each cell center.
     dS : float
         Cell area = d**2.
-
-    TODO (F1 §3.1): build a regular grid of cell centers. Origin at cylinder
-    center. Tip: np.meshgrid + reshape to (N, 2).
     """
     N_cells = math.ceil(domain_size / d)
     half = N_cells // 2
@@ -50,8 +44,6 @@ def assign_contrast(
     Returns
     -------
     chi : (N,) complex ndarray
-
-    TODO (F1 §1): radial test on centers, fill complex array.
     """
     r = np.hypot(centers[:, 0], centers[:, 1])       # (N,) distance of each cell to the origin
     chi = np.where(r <= R_cyl, eps_r / eps_b - 1, 0.0)

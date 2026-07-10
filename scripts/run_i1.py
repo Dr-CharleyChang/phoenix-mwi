@@ -1,6 +1,6 @@
 """I1 driver: Born linear inversion — reconstruct a contrast map and plot it.
 
-Run AFTER implementing the TODOs in mwisim/inverse/born.py:
+Run:
     python scripts/run_i1.py
 
 Output:

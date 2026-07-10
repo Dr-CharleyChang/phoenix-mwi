@@ -1,6 +1,6 @@
 """2D free-space scalar Green's function.
 
-Tutorial ref: F1 §2.  Convention e^{+jωt}: G = (1/4j) H0^(2)(k_b R).
+Convention e^{+jωt}: G = (1/4j) H0^(2)(k_b R).
 """
 from __future__ import annotations
 
@@ -21,8 +21,6 @@ def green_2d(k_b: complex, R):
     Returns
     -------
     G : complex ndarray, same shape as R.
-
-    TODO (F1 §2): use scipy.special.hankel2(0, k_b*R). Guard R>0.
     """
     
     G = 1 / 4j * hankel2(0, k_b * R)
