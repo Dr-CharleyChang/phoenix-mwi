@@ -8,3 +8,13 @@ Licensed under the Apache License, Version 2.0. See the LICENSE file.
 
 If you use this software in academic work, please cite it — see CITATION.cff
 or the "How to cite" section of README.md.
+
+Measured-data benchmark artifacts are derived from the University of Manitoba
+Breast Microwave Imaging Dataset (UM-BMID), DOI 10.5281/zenodo.5120981,
+licensed CC-BY-4.0. See docs/phase2_um_bmid/ATTRIBUTION.md and
+docs/phase2b_um_bmid/ATTRIBUTION.md.
+
+The P2-B optimization-based radar reconstruction design references the work of
+Tyson Reimer and Stephen Pistorius and the Apache-2.0 ORR-Algorithm repository.
+Phoenix independently implements the published model with additional numerical
+safeguards; see docs/phase2b_um_bmid/ATTRIBUTION.md.

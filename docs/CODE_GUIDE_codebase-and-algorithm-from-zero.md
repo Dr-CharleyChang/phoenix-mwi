@@ -1482,6 +1482,8 @@ Two separate things: (1) a real bug — `convergence_study` had `k_1 = f/lam0·�
 
 ## Appendix H — Phase 2 measured-data entrance
 
+### H.1 P2-A — trustworthy measured-data entrance
+
 Phase 1's synthetic inversion dictionary and Phase 2's real measurement record are intentionally different at this stage. The synthetic dictionary already assumes Phoenix's 2-D plane-wave model and contains `d`, `E_inc`, `G_tr`, and the inversion grid. A real VNA file does not justify those assumptions merely because it contains complex numbers; it first enters as a neutral `MeasurementSet` with named axes, physical coordinates, geometry, metadata, and provenance.
 
 The new file path is:
@@ -1509,3 +1511,50 @@ scripts/run_p2_um_bmid.py
 The complete school-math-to-code explanation, arithmetic examples, security boundary, pseudocode, benchmark numbers, and next-step boundary are in [P2_Tutorial_Measured-Data-from-zero-to-100.md](P2_Tutorial_Measured-Data-from-zero-to-100.md). The exact axis/storage contract is in [P2_Measurement_Schema_Reference.md](P2_Measurement_Schema_Reference.md).
 
 The durable rule is: **ingest first without changing physics, preprocess with explicit named operations, and attach an imager/inverter only after its acquisition-model assumptions are declared.** This is why `UMBMIDDataSource` does not feed UM-BMID S11 directly into the existing plane-wave Born/DBIM/CSI code.
+
+### H.2 P2-B — attach a declared monostatic radar model
+
+P2-B adds the first measured spatial operator only after stating its assumptions. For antenna $a$, pixel $p$, frequency $f$, homogeneous speed $v$, and distance $R_{a,p}$, the forward entry is
+
+$$
+G_{(f,a),p}=e^{-j4\pi fR_{a,p}/v}.
+$$
+
+The factor two inside $4\pi$ is the monostatic round trip. The measured DAS image is the exact adjoint back-projection
+
+$$
+\mathbf b=G^H\mathbf d,
+$$
+
+followed by normalized intensity $|b_p|^2/\max_q|b_q|^2$. ORR starts from zero and repeatedly evaluates forward prediction, data residual, and adjoint gradient:
+
+$$
+\nabla J(\boldsymbol\sigma)=\operatorname{Re}\{G^H(G\boldsymbol\sigma-\mathbf d)\}+\lambda\boldsymbol\sigma.
+$$
+
+The code path is:
+
+```text
+mwisim/imaging/measured.py
+    ImageGrid2D + MonostaticScan
+    MonostaticImagingOperator: matvec G and rmatvec G^H
+    MeasuredDAS + ORRImager
+            ↓
+mwisim/preprocessing/artifacts.py
+    AngularMeanSubtract + LowRankClutterFilter
+            ↓
+mwisim/evaluation/measured_imaging.py
+    coordinate peak + localization error + SCR + aggregation
+            ↓
+mwisim/evaluation/measured_benchmark.py
+    ID-safe references + disjoint speed split + ablations + gate
+            ↓
+scripts/run_p2b_measured_imaging.py
+    verified public data → JSON + Markdown + two figures
+```
+
+The most important implementation gate is the complex adjoint identity $\langle Gx,u\rangle=\langle x,G^Hu\rangle$. A wrong phase sign or missing conjugate can still produce an attractive picture, but ORR's update would no longer be the gradient of its stated objective.
+
+Do not merge the three overloaded meanings of “image/inverse”: measured DAS returns a normalized focus intensity, ORR returns a scaled qualitative reflectivity proxy $\sigma$, and Born/DBIM/CSI aim at dielectric contrast $\chi$ under the separate 2-D tomographic model. Their shared platform interface does not make their physical outputs interchangeable.
+
+The complete from-school-mathematics derivation, arithmetic examples, algorithm pseudocode, artifact-removal explanation, mixed-cohort numbers, code walkthrough, and interpretation boundary are in [P2B_Tutorial_Measured-DAS-ORR-and-artifact-removal-from-zero-to-100.md](P2B_Tutorial_Measured-DAS-ORR-and-artifact-removal-from-zero-to-100.md). The acceptance evidence is in [P2B_milestone.md](P2B_milestone.md).

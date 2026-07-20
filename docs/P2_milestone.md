@@ -68,6 +68,6 @@ The large public archive is an opt-in system test rather than a normal CI depend
 
 P2-A proves ingestion, alignment, provenance, complex-gain mechanics, metadata-linked reference subtraction, and time-transform reproduction on real measurements. It does not prove that the existing synthetic plane-wave Born/DBIM/CSI operators are valid for this monostatic 3-D experimental geometry. It also does not correct antenna phase centers, dispersive immersion/background media, skin response, scan drift, or reference mismatch.
 
-## 6. Next milestone
+## 6. Subsequent status
 
-P2-B should implement a measured monostatic qualitative baseline compatible with UM-BMID—DAS and preferably the public ORR baseline—then evaluate localization against documented phantom/tumor metadata. The first artifact-removal method should be compared against plain empty-reference subtraction with ablation and multi-scan statistics. Measured quantitative inversion should follow only after the propagation and calibration assumptions have their own validation gates.
+P2-B is now complete. It implements measured monostatic DAS and ORR-style imaging, angular-mean and low-rank artifact ablations, a disjoint speed-calibration/held-out protocol, and coordinate-checked localization statistics on eight Gen-One scans. See [P2B_milestone.md](P2B_milestone.md) and [P2B_Tutorial_Measured-DAS-ORR-and-artifact-removal-from-zero-to-100.md](P2B_Tutorial_Measured-DAS-ORR-and-artifact-removal-from-zero-to-100.md). The full baseline is 88 passing tests.
