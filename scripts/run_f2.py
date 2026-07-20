@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 import matplotlib
-matplotlib.use("Agg")
+matplotlib.use("Agg") # non-interactive backend, silent output
 import matplotlib.pyplot as plt
 
 from mwisim.grid import make_grid, assign_contrast

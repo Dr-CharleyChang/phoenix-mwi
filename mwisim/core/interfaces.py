@@ -49,8 +49,9 @@ class Phantom(ABC):
 class SceneBuilder(ABC):
     """Build a :class:`Phantom` (+ array geometry) from a declarative spec.
 
-    Phase 1 implements a YAML/txt loader (gprMax-style) so users define problems without
-    writing Python. Stubbed here so the contract exists from the start (PROJECT_PLAN §11.2).
+    Phase 1 provides :class:`mwisim.config.YamlSceneBuilder` so users can define
+    composite 2-D scenes without writing Python. Future builders may target measured-data
+    metadata, anthropomorphic phantoms, or 3-D scene formats behind this same contract.
     """
 
     @abstractmethod
@@ -90,7 +91,12 @@ class ForwardSolver(ABC):
 # Layer 3 — Data (ingest + preprocessing)
 # --------------------------------------------------------------------------
 class DataSource(ABC):
-    """Ingest synthetic or real measurements into the unified schema (no alteration)."""
+    """Ingest synthetic or real measurements into a shared downstream schema.
+
+    Phase 1 provides :class:`mwisim.data.SyntheticDataSource`, including controlled
+    complex noise and true-versus-assumed receiver geometry. Real-data ingest and its
+    calibration metadata are Phase-2 work.
+    """
 
     @abstractmethod
     def measurements(self, **kwargs):

@@ -1,0 +1,66 @@
+schema_version: 1
+name: heterogeneous_noisy_geometry_demo
+
+scene:
+  type: composite_circles
+  domain_size_m: 0.36
+  cell_size_m: 0.04
+  background_eps_r: 1.0
+  overlap_policy: last_wins
+  inclusions:
+    - label: host_tissue
+      center_m: [0.02, 0.00]
+      radius_m: 0.08
+      eps_r: 1.25
+    - label: high_contrast_core
+      center_m: [0.05, 0.02]
+      radius_m: 0.035
+      eps_r: 1.70
+
+acquisition:
+  frequency_hz: 1.0e9
+  n_views: 8
+  n_receivers: 20
+  observation_radius_m: 0.30
+
+corruption:
+  snr_db: 25.0
+  receiver_position_std_m: 0.001
+  seed: 7
+
+algorithms:
+  warm_start: true
+  imager:
+    name: das
+    params:
+      power: 2.0
+      sensitivity_correction: true
+  inverters:
+    born:
+      name: born
+      params:
+        mu: 0.01
+        iter_lim: 250
+    dbim:
+      name: dbim
+      params:
+        mu: 0.02
+        max_outer: 8
+        inner_iter: 120
+        step: 0.8
+        tol: 0.001
+    csi:
+      name: csi
+      params:
+        mu_chi: 0.02
+        mu_w: 0.002
+        xi: 1.0
+        max_outer: 8
+        step: 0.8
+        tol: 0.001
+
+evaluation:
+  support_threshold: 0.20
+
+reporting:
+  output_dir: null

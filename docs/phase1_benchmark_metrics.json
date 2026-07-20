@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-19T18:56:39-07:00",
+  "problem_summary": {
+    "frequency_hz": 1000000000.0,
+    "n_cells": 81,
+    "grid_shape": [
+      9,
+      9
+    ],
+    "n_views": 8,
+    "n_receivers": 20,
+    "cell_area_m2": 0.001664361442105218,
+    "max_true_contrast": 0.5,
+    "max_true_eps_r_for_eps_b_1": 1.5,
+    "warm_start": true
+  },
+  "methods": {
+    "born": {
+      "name": "Born",
+      "metrics": {
+        "rel_l2": 0.6146451516319413,
+        "rmse": 0.12311858946801682,
+        "eps_r_rmse": 0.12311858946801683,
+        "ssim": 0.7099691275984452,
+        "support_iou": 0.6190476190476191,
+        "contrast_recovery": 0.6603469725483542,
+        "contrast_rel_error": 0.33965302745164583,
+        "localization_error_m": 2.423645702140778e-10,
+        "data_residual": 0.35003534773841877
+      },
+      "runtime_s": 0.0016617999644950032,
+      "refinement_runtime_s": 0.0016617999644950032,
+      "info": {
+        "iters": 11,
+        "istop": 2,
+        "mu": 0.01,
+        "solver": "lsmr",
+        "N": 81
+      }
+    },
+    "dbim": {
+      "name": "DBIM",
+      "metrics": {
+        "rel_l2": 0.37917320844640184,
+        "rmse": 0.07595158029642762,
+        "eps_r_rmse": 0.07595158029642762,
+        "ssim": 0.853563903669106,
+        "support_iou": 1.0,
+        "contrast_recovery": 0.8565083892582487,
+        "contrast_rel_error": 0.14349161074175132,
+        "localization_error_m": 4.717573673339222e-11,
+        "data_residual": 0.0016231176200074548
+      },
+      "runtime_s": 0.201223999960348,
+      "refinement_runtime_s": 0.199562199995853,
+      "info": {
+        "outer_iters": 10,
+        "res_history": [
+          0.35003534773841877,
+          0.08359909014366408,
+          0.0048907772330342705,
+          0.002931162888872573,
+          0.00265238511102272,
+          0.002413326856267668,
+          0.0022059754989425862,
+          0.0020263436150986234,
+          0.0018712024639606056,
+          0.0017376684016592841
+        ],
+        "mu": 0.01,
+        "step": 1.0,
+        "tol": 0.001,
+        "distorted": true,
+        "solver": "lsmr"
+      }
+    },
+    "csi": {
+      "name": "CSI",
+      "metrics": {
+        "rel_l2": 0.42071237727633926,
+        "rmse": 0.08427222491623289,
+        "eps_r_rmse": 0.08427222491623289,
+        "ssim": 0.7788442434131029,
+        "support_iou": 1.0,
+        "contrast_recovery": 0.742619307137696,
+        "contrast_rel_error": 0.25738069286230403,
+        "localization_error_m": 2.4942787904128058e-11,
+        "data_residual": 0.11435862645121103
+      },
+      "runtime_s": 0.06393609993392602,
+      "refinement_runtime_s": 0.06227429996943101,
+      "info": {
+        "outer_iters": 10,
+        "data_res_history": [
+          0.21148192794690177,
+          0.11528270204368932,
+          0.10511018190096412,
+          0.09664109038583638,
+          0.08930418876104716,
+          0.08288582727616865,
+          0.0773191170589361,
+          0.07224134547106714,
+          0.06800952480498094,
+          0.06440157514496048
+        ],
+        "state_res_history": [
+          0.3754678045928966,
+          0.06442273085578955,
+          0.059218854874789305,
+          0.05451944412296909,
+          0.05030581233348267,
+          0.04669166053281842,
+          0.04339086688849499,
+          0.040578671152182465,
+          0.038421099913052606,
+          0.03638423643337776
+        ],
+        "mu_chi": 0.01,
+        "mu_w": 0.001,
+        "xi": 1.0,
+        "step": 1.0,
+        "tol": 0.001,
+        "init": "born",
+        "N": 81
+      }
+    }
+  },
+  "das": {
+    "name": "DAS",
+    "metrics": {
+      "ssim": 0.6174785684823002,
+      "support_iou": 0.6923076923076923,
+      "localization_error_m": 6.699399935372675e-18
+    },
+    "runtime_s": 0.0008249999955296516
+  },
+  "acceptance": {
+    "dbim_data_fit_better_than_born": true,
+    "csi_data_fit_better_than_born": true,
+    "das_localizes_inside_true_object": true,
+    "all_outputs_finite": true
+  }
+}

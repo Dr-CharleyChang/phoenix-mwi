@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-19T19:51:09-07:00",
+  "problem_summary": {
+    "frequency_hz": 1000000000.0,
+    "n_cells": 81,
+    "grid_shape": [
+      9,
+      9
+    ],
+    "n_views": 8,
+    "n_receivers": 20,
+    "cell_area_m2": 0.0016,
+    "max_true_contrast": 0.7,
+    "max_true_eps_r_for_eps_b_1": 1.7,
+    "warm_start": true,
+    "support_threshold": 0.2,
+    "snr_db_requested": 25.0,
+    "receiver_position_std_m": 0.001,
+    "seed": 7,
+    "scene_name": "heterogeneous_noisy_geometry_demo"
+  },
+  "methods": {
+    "born": {
+      "name": "Born",
+      "metrics": {
+        "rel_l2": 0.526943502147642,
+        "rmse": 0.07417525746344805,
+        "eps_r_rmse": 0.07417525746344804,
+        "ssim": 0.8315255110062033,
+        "support_iou": 0.8571428571428571,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.8169646996306698,
+        "contrast_rel_error": 0.18303530036933024,
+        "localization_error_m": 0.008390956822374758,
+        "data_residual": 0.30123765021865195
+      },
+      "runtime_s": 0.0035804000217467546,
+      "refinement_runtime_s": 0.0035804000217467546,
+      "info": {
+        "iters": 37,
+        "istop": 2,
+        "mu": 0.01,
+        "solver": "lsmr",
+        "N": 81
+      }
+    },
+    "dbim": {
+      "name": "DBIM",
+      "metrics": {
+        "rel_l2": 0.40068790412428706,
+        "rmse": 0.05640287493777833,
+        "eps_r_rmse": 0.05640287493777834,
+        "ssim": 0.8600139653562499,
+        "support_iou": 0.8461538461538461,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.939726418924027,
+        "contrast_rel_error": 0.060273581075973026,
+        "localization_error_m": 0.00662735808705041,
+        "data_residual": 0.05131776615999189
+      },
+      "runtime_s": 0.16890840005362406,
+      "refinement_runtime_s": 0.1653280000318773,
+      "info": {
+        "outer_iters": 8,
+        "res_history": [
+          0.30123765021865195,
+          0.07077015055997136,
+          0.052748024347066505,
+          0.05174803605549723,
+          0.05159452838943741,
+          0.05150399310214212,
+          0.05143174910997244,
+          0.051370731528225244
+        ],
+        "mu": 0.02,
+        "step": 0.8,
+        "tol": 0.001,
+        "distorted": true,
+        "solver": "lsmr"
+      }
+    },
+    "csi": {
+      "name": "CSI",
+      "metrics": {
+        "rel_l2": 0.37247240820532856,
+        "rmse": 0.052431117689197226,
+        "eps_r_rmse": 0.052431117689197226,
+        "ssim": 0.8567164155392523,
+        "support_iou": 0.9230769230769231,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.8461744192822497,
+        "contrast_rel_error": 0.15382558071775032,
+        "localization_error_m": 0.005523989263932213,
+        "data_residual": 0.1319122521473786
+      },
+      "runtime_s": 0.05755150003824383,
+      "refinement_runtime_s": 0.053971100016497076,
+      "info": {
+        "outer_iters": 8,
+        "data_res_history": [
+          0.1933266544279488,
+          0.11311554289804951,
+          0.10593141197202266,
+          0.10135756410645178,
+          0.09711473768507957,
+          0.09334282630726717,
+          0.09000755595757227,
+          0.08705296763923728
+        ],
+        "state_res_history": [
+          0.27955084132103386,
+          0.07600538327145565,
+          0.04579066009349402,
+          0.041546702355483696,
+          0.03929945229003161,
+          0.03738992986098884,
+          0.03569060039547815,
+          0.034139300074721074
+        ],
+        "mu_chi": 0.02,
+        "mu_w": 0.002,
+        "xi": 1.0,
+        "step": 0.8,
+        "tol": 0.001,
+        "init": "born",
+        "N": 81
+      }
+    }
+  },
+  "das": {
+    "name": "DAS",
+    "metrics": {
+      "ssim": 0.6451065739551318,
+      "support_iou": 0.8461538461538461,
+      "localization_error_m": 0.00775959703658048
+    },
+    "runtime_s": 0.0008317999891005456
+  },
+  "acceptance": {
+    "dbim_data_fit_better_than_born": true,
+    "csi_data_fit_better_than_born": true,
+    "das_localizes_inside_true_object": true,
+    "all_outputs_finite": true
+  }
+}

@@ -1,5 +1,6 @@
-"""Evaluators (Layer 8). Phase 0 ships the relative-L2 metric behind the interface;
-SSIM / εr-RMSE / localization error arrive with the inversion stage.
+"""Small evaluator adapters retained from Phase 0.
+
+The complete Phase-1 image metric suite lives in :mod:`mwisim.evaluation.image_metrics`.
 """
 from __future__ import annotations
 
