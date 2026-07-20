@@ -32,4 +32,23 @@ jobs:
         env:
           MPLBACKEND: Agg
         run: |
-          pytest -q
+          pytest -q -p no:cacheprovider
+
+      - name: Validate publication notebook JSON
+        if: matrix.python-version == '3.11'
+        run: |
+          python -m json.tool notebooks/phase1_hardening_platform_demo.ipynb > /dev/null
+
+      - name: Run YAML pipeline smoke example
+        if: matrix.python-version == '3.11'
+        env:
+          MPLBACKEND: Agg
+        run: |
+          python scripts/run_phase1_pipeline.py --config examples/phase1_hardening.yaml --output-dir ci_artifacts/phase1
+
+      - name: Upload Phase-1 smoke artifacts
+        if: matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase1-ci-smoke
+          path: ci_artifacts/phase1

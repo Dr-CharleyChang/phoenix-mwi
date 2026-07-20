@@ -19,14 +19,7 @@ def build_D(centers: np.ndarray, chi: np.ndarray, k_b: complex, d: float) -> np.
         D_mn = -chi_n * (j*pi*k_b*a/2) * J1(k_b a) * H0^(2)(k_b * rho_mn)
     Self  (m == n):
         D_nn = -chi_n * (j*pi*k_b*a/2) * H1^(2)(k_b a) - chi_n
-    with a = d/sqrt(pi), rho_mn = |r_m - r_n|.
-
-    TODO (F1 §3.4):
-      1. pairwise distances rho_mn (use broadcasting on centers).
-      2. fill off-diagonal with J1*H0^(2) form.
-      3. overwrite diagonal with H1^(2) self term.
-      4. multiply each column n by chi_n and the prefactor.
-    scipy: jv(1,.), hankel2(0,.), hankel2(1,.).
+    with a = d/sqrt(pi), rho_mn = |r_m - r_n|、
     """
     a = d / np.sqrt(np.pi)
     pref = -(1j * np.pi * k_b * a / 2)
@@ -40,7 +33,7 @@ def build_D(centers: np.ndarray, chi: np.ndarray, k_b: complex, d: float) -> np.
 def incident_plane_wave(centers: np.ndarray, k_b: complex, E0: complex = 1.0) -> np.ndarray:
     """Plane wave E_inc(r) = E0 * exp(-j k_b x), evaluated at cell centers.
 
-    Returns (N,) complex.  TODO (F1 §4): use centers[:, 0] as x.
+    Returns (N,) complex.
     """
     E_inc = E0 * np.exp(-1j * k_b * centers[:, 0])
     return E_inc.astype(complex)
@@ -50,7 +43,6 @@ def solve_total_field(D: np.ndarray, E_inc: np.ndarray) -> np.ndarray:
     """Solve (I - D) E_tot = E_inc for the in-domain total field.
 
     Returns (N,) complex.  F1: direct solve is fine (np.linalg.solve).
-    TODO (F1 §5).
     """
     I = np.eye(D.shape[0])
     return np.linalg.solve(I - D, E_inc)
@@ -76,8 +68,6 @@ def scattered_field(
     Returns
     -------
     E_sc : (Nrx,) complex
-
-    TODO (F1 §6): distances r_r -> r_n, Green, weighted sum.
     """
     pref = k_b**2 * dS
     rho = np.sqrt(((rx_points[:, None, :] - centers[None, :, :])**2).sum(axis=-1))

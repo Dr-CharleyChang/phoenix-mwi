@@ -144,12 +144,12 @@ If you skip or botch the padding, the error is *small but mesh-dependent* — it
 
 ## §3 What to implement (`mwisim/operators.py`)
 
-| Stub | Hints |
-|---|---|
-| `GreenFFT.__init__` | recover `(ny, nx)` (helper given); build displacement grids `np.arange(-(n-1), n)`; `rho = d*sqrt(dx²+dy²)`; evaluate `g` (off-diag + self at `rho==0` — `np.where`, wrap Hankel call in `np.errstate(invalid="ignore")` since `hankel2(0,0)` is NaN); zero-pad per §2; store `fft2(g_pad)` **once** |
-| `_conv` | zero-pad field → `ifft2(G_hat * fft2(vp))` → slice `[:ny,:nx]` |
-| `apply_D` | reshape flat `x` to grid, multiply by `chi` **first**, convolve, ravel |
-| `apply_IminusD` | `x - apply_D(x)` |
+| Stub                | Hints                                                                                                                                                                                                                                                                                                      |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GreenFFT.__init__` | recover `(ny, nx)` (helper given); build displacement grids `np.arange(-(n-1), n)`; `rho = d*sqrt(dx²+dy²)`; evaluate `g` (off-diag + self at `rho==0` — `np.where`, wrap Hankel call in `np.errstate(invalid="ignore")` since `hankel2(0,0)` is NaN); zero-pad per §2; store `fft2(g_pad)` **once**       |
+| `_conv`             | zero-pad field → `ifft2(G_hat * fft2(vp))` → slice `[:ny,:nx]`                                                                                                                                                                                                                                             |
+| `apply_D`           | reshape flat `x` to grid, multiply by `chi` **first**, convolve, ravel                                                                                                                                                                                                                                     |
+| `apply_IminusD`     | `x - apply_D(x)`                                                                                                                                                                                                                                                                                           |
 | `solve_total_field` | wrap `as_linear_operator()` (given) in `scipy.sparse.linalg.bicgstab` / `gmres`. Gotchas: SciPy ≥1.12 uses `rtol` not `tol` (try/except TypeError); gmres wants explicit `callback_type="pr_norm"`; count iterations with a callback; report final relative residual yourself — don't trust `status` alone |
 
 Conventions to preserve: row-major ravel (axis 0 = y!), `e^{+jωt}`/`H^(2)`, and the self-cell `-1`.

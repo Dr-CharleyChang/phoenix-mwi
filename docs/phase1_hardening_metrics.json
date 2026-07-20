@@ -1,0 +1,1753 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-19T19:57:42-07:00",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "scenario_specs": {
+    "off_center": {
+      "schema_version": 1,
+      "name": "off_center",
+      "scene": {
+        "type": "composite_circles",
+        "domain_size_m": 0.36,
+        "cell_size_m": 0.04,
+        "background_eps_r": 1.0,
+        "overlap_policy": "last_wins",
+        "inclusions": [
+          {
+            "label": "offset_target",
+            "center_m": [
+              0.06,
+              -0.04
+            ],
+            "radius_m": 0.06,
+            "eps_r": 1.5
+          }
+        ]
+      },
+      "acquisition": {
+        "frequency_hz": 1000000000.0,
+        "n_views": 8,
+        "n_receivers": 20,
+        "observation_radius_m": 0.3
+      },
+      "corruption": {
+        "snr_db": 30.0,
+        "receiver_position_std_m": 0.0005,
+        "seed": 0
+      },
+      "algorithms": {
+        "warm_start": true,
+        "imager": {
+          "name": "das",
+          "params": {
+            "power": 2.0,
+            "sensitivity_correction": true
+          }
+        },
+        "inverters": {
+          "born": {
+            "name": "born",
+            "params": {
+              "mu": 0.01,
+              "iter_lim": 250
+            }
+          },
+          "dbim": {
+            "name": "dbim",
+            "params": {
+              "mu": 0.02,
+              "max_outer": 8,
+              "inner_iter": 120,
+              "step": 0.8,
+              "tol": 0.001
+            }
+          },
+          "csi": {
+            "name": "csi",
+            "params": {
+              "mu_chi": 0.02,
+              "mu_w": 0.002,
+              "xi": 1.0,
+              "max_outer": 8,
+              "step": 0.8,
+              "tol": 0.001
+            }
+          }
+        }
+      },
+      "evaluation": {
+        "support_threshold": 0.5
+      },
+      "reporting": {
+        "output_dir": null
+      }
+    },
+    "dual_target": {
+      "schema_version": 1,
+      "name": "dual_target",
+      "scene": {
+        "type": "composite_circles",
+        "domain_size_m": 0.36,
+        "cell_size_m": 0.04,
+        "background_eps_r": 1.0,
+        "overlap_policy": "last_wins",
+        "inclusions": [
+          {
+            "label": "left_target",
+            "center_m": [
+              -0.07,
+              0.03
+            ],
+            "radius_m": 0.05,
+            "eps_r": 1.4
+          },
+          {
+            "label": "right_target",
+            "center_m": [
+              0.07,
+              -0.03
+            ],
+            "radius_m": 0.05,
+            "eps_r": 1.65
+          }
+        ]
+      },
+      "acquisition": {
+        "frequency_hz": 1000000000.0,
+        "n_views": 8,
+        "n_receivers": 20,
+        "observation_radius_m": 0.3
+      },
+      "corruption": {
+        "snr_db": 25.0,
+        "receiver_position_std_m": 0.001,
+        "seed": 0
+      },
+      "algorithms": {
+        "warm_start": true,
+        "imager": {
+          "name": "das",
+          "params": {
+            "power": 2.0,
+            "sensitivity_correction": true
+          }
+        },
+        "inverters": {
+          "born": {
+            "name": "born",
+            "params": {
+              "mu": 0.01,
+              "iter_lim": 250
+            }
+          },
+          "dbim": {
+            "name": "dbim",
+            "params": {
+              "mu": 0.02,
+              "max_outer": 8,
+              "inner_iter": 120,
+              "step": 0.8,
+              "tol": 0.001
+            }
+          },
+          "csi": {
+            "name": "csi",
+            "params": {
+              "mu_chi": 0.02,
+              "mu_w": 0.002,
+              "xi": 1.0,
+              "max_outer": 8,
+              "step": 0.8,
+              "tol": 0.001
+            }
+          }
+        }
+      },
+      "evaluation": {
+        "support_threshold": 0.2
+      },
+      "reporting": {
+        "output_dir": null
+      }
+    },
+    "heterogeneous_nested": {
+      "schema_version": 1,
+      "name": "heterogeneous_nested",
+      "scene": {
+        "type": "composite_circles",
+        "domain_size_m": 0.36,
+        "cell_size_m": 0.04,
+        "background_eps_r": 1.0,
+        "overlap_policy": "last_wins",
+        "inclusions": [
+          {
+            "label": "host",
+            "center_m": [
+              0.02,
+              0.0
+            ],
+            "radius_m": 0.08,
+            "eps_r": 1.25
+          },
+          {
+            "label": "core",
+            "center_m": [
+              0.05,
+              0.02
+            ],
+            "radius_m": 0.035,
+            "eps_r": 1.7
+          }
+        ]
+      },
+      "acquisition": {
+        "frequency_hz": 1000000000.0,
+        "n_views": 8,
+        "n_receivers": 20,
+        "observation_radius_m": 0.3
+      },
+      "corruption": {
+        "snr_db": 25.0,
+        "receiver_position_std_m": 0.001,
+        "seed": 0
+      },
+      "algorithms": {
+        "warm_start": true,
+        "imager": {
+          "name": "das",
+          "params": {
+            "power": 2.0,
+            "sensitivity_correction": true
+          }
+        },
+        "inverters": {
+          "born": {
+            "name": "born",
+            "params": {
+              "mu": 0.01,
+              "iter_lim": 250
+            }
+          },
+          "dbim": {
+            "name": "dbim",
+            "params": {
+              "mu": 0.02,
+              "max_outer": 8,
+              "inner_iter": 120,
+              "step": 0.8,
+              "tol": 0.001
+            }
+          },
+          "csi": {
+            "name": "csi",
+            "params": {
+              "mu_chi": 0.02,
+              "mu_w": 0.002,
+              "xi": 1.0,
+              "max_outer": 8,
+              "step": 0.8,
+              "tol": 0.001
+            }
+          }
+        }
+      },
+      "evaluation": {
+        "support_threshold": 0.2
+      },
+      "reporting": {
+        "output_dir": null
+      }
+    }
+  },
+  "rows": [
+    {
+      "scenario": "off_center",
+      "seed": 0,
+      "method": "born",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.5345774229252966,
+        "rmse": 0.07857549542056298,
+        "eps_r_rmse": 0.07857549542056298,
+        "ssim": 0.8187525039867031,
+        "support_iou": 1.0,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.7143743749842556,
+        "contrast_rel_error": 0.2856256250157444,
+        "localization_error_m": 0.001607431663812456,
+        "data_residual": 0.3174205700360492,
+        "runtime_s": 0.003211100003682077
+      }
+    },
+    {
+      "scenario": "off_center",
+      "seed": 0,
+      "method": "dbim",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.3445061274078702,
+        "rmse": 0.05063764101439763,
+        "eps_r_rmse": 0.05063764101439763,
+        "ssim": 0.8590045997289834,
+        "support_iou": 0.8571428571428571,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.8877633323684849,
+        "contrast_rel_error": 0.11223666763151507,
+        "localization_error_m": 0.007507779020766887,
+        "data_residual": 0.027863902103516643,
+        "runtime_s": 0.16776330000720918
+      }
+    },
+    {
+      "scenario": "off_center",
+      "seed": 0,
+      "method": "csi",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.36783737389113996,
+        "rmse": 0.054067011901724416,
+        "eps_r_rmse": 0.05406701190172442,
+        "ssim": 0.8075772090699083,
+        "support_iou": 0.8571428571428571,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.7645272686019279,
+        "contrast_rel_error": 0.23547273139807212,
+        "localization_error_m": 0.007287295191497046,
+        "data_residual": 0.13633011374282625,
+        "runtime_s": 0.05417529999976978
+      }
+    },
+    {
+      "scenario": "off_center",
+      "seed": 0,
+      "method": "das",
+      "kind": "qualitative",
+      "metrics": {
+        "ssim": 0.6273393362959637,
+        "support_iou": 0.5714285714285714,
+        "localization_error_m": 0.0007477799890390277,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "runtime_s": 0.0008059999672695994
+      }
+    },
+    {
+      "scenario": "off_center",
+      "seed": 1,
+      "method": "born",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.5341161814546883,
+        "rmse": 0.07850769929691971,
+        "eps_r_rmse": 0.0785076992969197,
+        "ssim": 0.8107857775960616,
+        "support_iou": 0.8571428571428571,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.7198656071879788,
+        "contrast_rel_error": 0.28013439281202124,
+        "localization_error_m": 0.007576055441702551,
+        "data_residual": 0.31904423806248855,
+        "runtime_s": 0.0033559000003151596
+      }
+    },
+    {
+      "scenario": "off_center",
+      "seed": 1,
+      "method": "dbim",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.35932601300943284,
+        "rmse": 0.05281595944551773,
+        "eps_r_rmse": 0.05281595944551773,
+        "ssim": 0.8285450522251593,
+        "support_iou": 0.8571428571428571,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.8980408347038225,
+        "contrast_rel_error": 0.10195916529617755,
+        "localization_error_m": 0.007934318921715073,
+        "data_residual": 0.027309513638444555,
+        "runtime_s": 0.16794479999225587
+      }
+    },
+    {
+      "scenario": "off_center",
+      "seed": 1,
+      "method": "csi",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.36209491746754374,
+        "rmse": 0.05322295014553215,
+        "eps_r_rmse": 0.05322295014553214,
+        "ssim": 0.8234540294298147,
+        "support_iou": 0.8571428571428571,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.7711804229875071,
+        "contrast_rel_error": 0.2288195770124929,
+        "localization_error_m": 0.007528231817966627,
+        "data_residual": 0.13529684838242892,
+        "runtime_s": 0.058756599959451705
+      }
+    },
+    {
+      "scenario": "off_center",
+      "seed": 1,
+      "method": "das",
+      "kind": "qualitative",
+      "metrics": {
+        "ssim": 0.630030976845083,
+        "support_iou": 0.7142857142857143,
+        "localization_error_m": 0.006731917416927544,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "runtime_s": 0.000866199960000813
+      }
+    },
+    {
+      "scenario": "off_center",
+      "seed": 2,
+      "method": "born",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.5398407407768929,
+        "rmse": 0.07934913042647466,
+        "eps_r_rmse": 0.07934913042647466,
+        "ssim": 0.8113122741993863,
+        "support_iou": 0.8571428571428571,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.7144806897313136,
+        "contrast_rel_error": 0.2855193102686864,
+        "localization_error_m": 0.0073560684109070015,
+        "data_residual": 0.3202262724905443,
+        "runtime_s": 0.003265600011218339
+      }
+    },
+    {
+      "scenario": "off_center",
+      "seed": 2,
+      "method": "dbim",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.35075043384802546,
+        "rmse": 0.05155546778943818,
+        "eps_r_rmse": 0.05155546778943818,
+        "ssim": 0.8493654591259004,
+        "support_iou": 0.8571428571428571,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.8873963713662807,
+        "contrast_rel_error": 0.11260362863371931,
+        "localization_error_m": 0.007310959251332585,
+        "data_residual": 0.02884977551554713,
+        "runtime_s": 0.16714749997481704
+      }
+    },
+    {
+      "scenario": "off_center",
+      "seed": 2,
+      "method": "csi",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.36866672763914093,
+        "rmse": 0.054188915444286084,
+        "eps_r_rmse": 0.05418891544428607,
+        "ssim": 0.804373215506169,
+        "support_iou": 0.8571428571428571,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.7640965580380766,
+        "contrast_rel_error": 0.23590344196192337,
+        "localization_error_m": 0.007289980952597777,
+        "data_residual": 0.13835960462301047,
+        "runtime_s": 0.053623000043444335
+      }
+    },
+    {
+      "scenario": "off_center",
+      "seed": 2,
+      "method": "das",
+      "kind": "qualitative",
+      "metrics": {
+        "ssim": 0.6292054162409111,
+        "support_iou": 0.7142857142857143,
+        "localization_error_m": 0.006714766479891241,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "runtime_s": 0.0008161999867297709
+      }
+    },
+    {
+      "scenario": "dual_target",
+      "seed": 0,
+      "method": "born",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.6180287515054497,
+        "rmse": 0.1048199940174693,
+        "eps_r_rmse": 0.10481999401746932,
+        "ssim": 0.7705155693815953,
+        "support_iou": 0.47058823529411764,
+        "component_count": 1,
+        "true_component_count": 2,
+        "component_count_error": 1,
+        "contrast_recovery": 0.7431345853621839,
+        "contrast_rel_error": 0.2568654146378161,
+        "localization_error_m": 0.005712359743855228,
+        "data_residual": 0.3553391821098169,
+        "runtime_s": 0.0030944999889470637
+      }
+    },
+    {
+      "scenario": "dual_target",
+      "seed": 0,
+      "method": "dbim",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.4314617789869534,
+        "rmse": 0.07317753580559809,
+        "eps_r_rmse": 0.07317753580559809,
+        "ssim": 0.8260609089705254,
+        "support_iou": 0.5333333333333333,
+        "component_count": 1,
+        "true_component_count": 2,
+        "component_count_error": 1,
+        "contrast_recovery": 0.8635729311589906,
+        "contrast_rel_error": 0.1364270688410094,
+        "localization_error_m": 0.0018395924962384908,
+        "data_residual": 0.0499034797970992,
+        "runtime_s": 0.16679579997435212
+      }
+    },
+    {
+      "scenario": "dual_target",
+      "seed": 0,
+      "method": "csi",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.3734002029808219,
+        "rmse": 0.06333007476954969,
+        "eps_r_rmse": 0.06333007476954967,
+        "ssim": 0.8195599558828021,
+        "support_iou": 0.5714285714285714,
+        "component_count": 1,
+        "true_component_count": 2,
+        "component_count_error": 1,
+        "contrast_recovery": 0.7632658892989528,
+        "contrast_rel_error": 0.23673411070104722,
+        "localization_error_m": 0.005606742839935808,
+        "data_residual": 0.17648176841439858,
+        "runtime_s": 0.05353070003911853
+      }
+    },
+    {
+      "scenario": "dual_target",
+      "seed": 0,
+      "method": "das",
+      "kind": "qualitative",
+      "metrics": {
+        "ssim": 0.6115784698310551,
+        "support_iou": 0.42105263157894735,
+        "localization_error_m": 0.009274040782959111,
+        "component_count": 1,
+        "true_component_count": 2,
+        "component_count_error": 1,
+        "runtime_s": 0.000805600022431463
+      }
+    },
+    {
+      "scenario": "dual_target",
+      "seed": 1,
+      "method": "born",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.6117901666818333,
+        "rmse": 0.10376190663513304,
+        "eps_r_rmse": 0.10376190663513307,
+        "ssim": 0.7922490397643659,
+        "support_iou": 0.6153846153846154,
+        "component_count": 1,
+        "true_component_count": 2,
+        "component_count_error": 1,
+        "contrast_recovery": 0.7641533348751555,
+        "contrast_rel_error": 0.23584666512484453,
+        "localization_error_m": 0.004412602273859218,
+        "data_residual": 0.3584002816447509,
+        "runtime_s": 0.0032509000157006085
+      }
+    },
+    {
+      "scenario": "dual_target",
+      "seed": 1,
+      "method": "dbim",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.46118813695487304,
+        "rmse": 0.07821923759822254,
+        "eps_r_rmse": 0.07821923759822254,
+        "ssim": 0.8144728672081957,
+        "support_iou": 0.6153846153846154,
+        "component_count": 1,
+        "true_component_count": 2,
+        "component_count_error": 1,
+        "contrast_recovery": 0.8934237264530872,
+        "contrast_rel_error": 0.10657627354691279,
+        "localization_error_m": 0.009482942596537045,
+        "data_residual": 0.049712105150255086,
+        "runtime_s": 0.16705210000509396
+      }
+    },
+    {
+      "scenario": "dual_target",
+      "seed": 1,
+      "method": "csi",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.35238555400196175,
+        "rmse": 0.05976591149255381,
+        "eps_r_rmse": 0.059765911492553815,
+        "ssim": 0.8294167886308644,
+        "support_iou": 0.6666666666666666,
+        "component_count": 1,
+        "true_component_count": 2,
+        "component_count_error": 1,
+        "contrast_recovery": 0.7802032678364341,
+        "contrast_rel_error": 0.21979673216356588,
+        "localization_error_m": 0.007437250954662147,
+        "data_residual": 0.17366567613096978,
+        "runtime_s": 0.053709100058767945
+      }
+    },
+    {
+      "scenario": "dual_target",
+      "seed": 1,
+      "method": "das",
+      "kind": "qualitative",
+      "metrics": {
+        "ssim": 0.6178147358767447,
+        "support_iou": 0.42105263157894735,
+        "localization_error_m": 0.010374659442023027,
+        "component_count": 1,
+        "true_component_count": 2,
+        "component_count_error": 1,
+        "runtime_s": 0.0008167999912984669
+      }
+    },
+    {
+      "scenario": "dual_target",
+      "seed": 2,
+      "method": "born",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.6225788382756743,
+        "rmse": 0.10559170579766097,
+        "eps_r_rmse": 0.10559170579766099,
+        "ssim": 0.7740193452250973,
+        "support_iou": 0.5,
+        "component_count": 1,
+        "true_component_count": 2,
+        "component_count_error": 1,
+        "contrast_recovery": 0.7486887762114793,
+        "contrast_rel_error": 0.25131122378852067,
+        "localization_error_m": 0.0016944683658397133,
+        "data_residual": 0.3611617003186739,
+        "runtime_s": 0.0033549999934621155
+      }
+    },
+    {
+      "scenario": "dual_target",
+      "seed": 2,
+      "method": "dbim",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.41466404103981047,
+        "rmse": 0.07032857645405079,
+        "eps_r_rmse": 0.0703285764540508,
+        "ssim": 0.8463378298829602,
+        "support_iou": 0.5333333333333333,
+        "component_count": 1,
+        "true_component_count": 2,
+        "component_count_error": 1,
+        "contrast_recovery": 0.8917819926157315,
+        "contrast_rel_error": 0.10821800738426846,
+        "localization_error_m": 0.007538462647220438,
+        "data_residual": 0.051318277594058916,
+        "runtime_s": 0.16637430002447218
+      }
+    },
+    {
+      "scenario": "dual_target",
+      "seed": 2,
+      "method": "csi",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.3676212568092074,
+        "rmse": 0.06234994382635267,
+        "eps_r_rmse": 0.06234994382635266,
+        "ssim": 0.8266599436696903,
+        "support_iou": 0.6153846153846154,
+        "component_count": 1,
+        "true_component_count": 2,
+        "component_count_error": 1,
+        "contrast_recovery": 0.7689664429534443,
+        "contrast_rel_error": 0.2310335570465557,
+        "localization_error_m": 0.00200314687791493,
+        "data_residual": 0.17588057637539864,
+        "runtime_s": 0.05359359999420121
+      }
+    },
+    {
+      "scenario": "dual_target",
+      "seed": 2,
+      "method": "das",
+      "kind": "qualitative",
+      "metrics": {
+        "ssim": 0.6164539259543638,
+        "support_iou": 0.42105263157894735,
+        "localization_error_m": 0.009032841338871424,
+        "component_count": 1,
+        "true_component_count": 2,
+        "component_count_error": 1,
+        "runtime_s": 0.0008158999844454229
+      }
+    },
+    {
+      "scenario": "heterogeneous_nested",
+      "seed": 0,
+      "method": "born",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.5273640828118985,
+        "rmse": 0.07423446054485665,
+        "eps_r_rmse": 0.07423446054485665,
+        "ssim": 0.8292034017437123,
+        "support_iou": 0.9230769230769231,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.8152189329956577,
+        "contrast_rel_error": 0.18478106700434227,
+        "localization_error_m": 0.005776607652505767,
+        "data_residual": 0.30021735896827356,
+        "runtime_s": 0.0033796000061556697
+      }
+    },
+    {
+      "scenario": "heterogeneous_nested",
+      "seed": 0,
+      "method": "dbim",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.3846015747011963,
+        "rmse": 0.054138481085806565,
+        "eps_r_rmse": 0.05413848108580655,
+        "ssim": 0.8702088212864135,
+        "support_iou": 1.0,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.9528369330999701,
+        "contrast_rel_error": 0.047163066900029915,
+        "localization_error_m": 0.004309326553553829,
+        "data_residual": 0.050509762859920294,
+        "runtime_s": 0.1653840000508353
+      }
+    },
+    {
+      "scenario": "heterogeneous_nested",
+      "seed": 0,
+      "method": "csi",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.37518401096088827,
+        "rmse": 0.05281281673608268,
+        "eps_r_rmse": 0.05281281673608268,
+        "ssim": 0.846042133242105,
+        "support_iou": 0.9230769230769231,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.844641994139696,
+        "contrast_rel_error": 0.15535800586030402,
+        "localization_error_m": 0.00538882385549658,
+        "data_residual": 0.13562142512919897,
+        "runtime_s": 0.05373470002086833
+      }
+    },
+    {
+      "scenario": "heterogeneous_nested",
+      "seed": 0,
+      "method": "das",
+      "kind": "qualitative",
+      "metrics": {
+        "ssim": 0.6451299999532666,
+        "support_iou": 0.8461538461538461,
+        "localization_error_m": 0.007578063174455975,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "runtime_s": 0.0008135000243782997
+      }
+    },
+    {
+      "scenario": "heterogeneous_nested",
+      "seed": 1,
+      "method": "born",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.5222945734494874,
+        "rmse": 0.07352085052663339,
+        "eps_r_rmse": 0.07352085052663339,
+        "ssim": 0.8267234776378866,
+        "support_iou": 0.9230769230769231,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.8246180614189149,
+        "contrast_rel_error": 0.17538193858108508,
+        "localization_error_m": 0.0061914099957568695,
+        "data_residual": 0.3021907112813761,
+        "runtime_s": 0.003149600001052022
+      }
+    },
+    {
+      "scenario": "heterogeneous_nested",
+      "seed": 1,
+      "method": "dbim",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.43978029803635643,
+        "rmse": 0.061905719875560344,
+        "eps_r_rmse": 0.061905719875560344,
+        "ssim": 0.8414008674522264,
+        "support_iou": 0.9166666666666666,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.9640489998723711,
+        "contrast_rel_error": 0.03595100012762886,
+        "localization_error_m": 0.007856460162862547,
+        "data_residual": 0.050366365758204204,
+        "runtime_s": 0.1660879000555724
+      }
+    },
+    {
+      "scenario": "heterogeneous_nested",
+      "seed": 1,
+      "method": "csi",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.369896057855367,
+        "rmse": 0.0520684574614013,
+        "eps_r_rmse": 0.05206845746140131,
+        "ssim": 0.8462388134648948,
+        "support_iou": 0.9230769230769231,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.8547085504501296,
+        "contrast_rel_error": 0.1452914495498704,
+        "localization_error_m": 0.005881431326584672,
+        "data_residual": 0.12918512902396265,
+        "runtime_s": 0.0534145999699831
+      }
+    },
+    {
+      "scenario": "heterogeneous_nested",
+      "seed": 1,
+      "method": "das",
+      "kind": "qualitative",
+      "metrics": {
+        "ssim": 0.6518225115432836,
+        "support_iou": 0.8461538461538461,
+        "localization_error_m": 0.007900967757267029,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "runtime_s": 0.0008095999946817756
+      }
+    },
+    {
+      "scenario": "heterogeneous_nested",
+      "seed": 2,
+      "method": "born",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.5303637785547961,
+        "rmse": 0.07465671303138431,
+        "eps_r_rmse": 0.0746567130313843,
+        "ssim": 0.8169729207562982,
+        "support_iou": 0.9230769230769231,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.8204994199707479,
+        "contrast_rel_error": 0.17950058002925207,
+        "localization_error_m": 0.005770761033508634,
+        "data_residual": 0.30441908331654177,
+        "runtime_s": 0.0031548000406473875
+      }
+    },
+    {
+      "scenario": "heterogeneous_nested",
+      "seed": 2,
+      "method": "dbim",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.4169038743689736,
+        "rmse": 0.05868551769362775,
+        "eps_r_rmse": 0.05868551769362775,
+        "ssim": 0.8244350324370319,
+        "support_iou": 0.9166666666666666,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.9448137557289895,
+        "contrast_rel_error": 0.05518624427101049,
+        "localization_error_m": 0.006867646374227715,
+        "data_residual": 0.052569616565266146,
+        "runtime_s": 0.16530940006487072
+      }
+    },
+    {
+      "scenario": "heterogeneous_nested",
+      "seed": 2,
+      "method": "csi",
+      "kind": "quantitative",
+      "metrics": {
+        "rel_l2": 0.36831444981061345,
+        "rmse": 0.05184582223874893,
+        "eps_r_rmse": 0.05184582223874893,
+        "ssim": 0.8375338376678173,
+        "support_iou": 0.9230769230769231,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "contrast_recovery": 0.846620825217641,
+        "contrast_rel_error": 0.15337917478235896,
+        "localization_error_m": 0.005323925618574099,
+        "data_residual": 0.13585657018591063,
+        "runtime_s": 0.053646600048523396
+      }
+    },
+    {
+      "scenario": "heterogeneous_nested",
+      "seed": 2,
+      "method": "das",
+      "kind": "qualitative",
+      "metrics": {
+        "ssim": 0.6505943449076853,
+        "support_iou": 0.8461538461538461,
+        "localization_error_m": 0.007618163905370433,
+        "component_count": 1,
+        "true_component_count": 1,
+        "component_count_error": 0,
+        "runtime_s": 0.0008299000328406692
+      }
+    }
+  ],
+  "summary": {
+    "off_center": {
+      "born": {
+        "rel_l2": {
+          "n": 3,
+          "mean": 0.5361781150522926,
+          "std": 0.003180299722106414
+        },
+        "rmse": {
+          "n": 3,
+          "mean": 0.07881077504798578,
+          "std": 0.0004674601199633947
+        },
+        "eps_r_rmse": {
+          "n": 3,
+          "mean": 0.07881077504798578,
+          "std": 0.0004674601199633992
+        },
+        "ssim": {
+          "n": 3,
+          "mean": 0.8136168519273838,
+          "std": 0.004455389009292202
+        },
+        "support_iou": {
+          "n": 3,
+          "mean": 0.9047619047619048,
+          "std": 0.08247860988423228
+        },
+        "component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "true_component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "component_count_error": {
+          "n": 3,
+          "mean": 0.0,
+          "std": 0.0
+        },
+        "contrast_recovery": {
+          "n": 3,
+          "mean": 0.7162402239678493,
+          "std": 0.003140123934808553
+        },
+        "contrast_rel_error": {
+          "n": 3,
+          "mean": 0.2837597760321507,
+          "std": 0.003140123934808553
+        },
+        "localization_error_m": {
+          "n": 3,
+          "mean": 0.005513185172140669,
+          "std": 0.003384269703243696
+        },
+        "data_residual": {
+          "n": 3,
+          "mean": 0.31889702686302734,
+          "std": 0.0014086322865549772
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 0.003277533338405192,
+          "std": 7.313387026232472e-05
+        }
+      },
+      "dbim": {
+        "rel_l2": {
+          "n": 3,
+          "mean": 0.3515275247551095,
+          "std": 0.007440440512446533
+        },
+        "rmse": {
+          "n": 3,
+          "mean": 0.05166968941645118,
+          "std": 0.0010936419578168634
+        },
+        "eps_r_rmse": {
+          "n": 3,
+          "mean": 0.05166968941645118,
+          "std": 0.0010936419578168634
+        },
+        "ssim": {
+          "n": 3,
+          "mean": 0.8456383703600143,
+          "std": 0.015568057089310293
+        },
+        "support_iou": {
+          "n": 3,
+          "mean": 0.8571428571428571,
+          "std": 0.0
+        },
+        "component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "true_component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "component_count_error": {
+          "n": 3,
+          "mean": 0.0,
+          "std": 0.0
+        },
+        "contrast_recovery": {
+          "n": 3,
+          "mean": 0.891066846146196,
+          "std": 0.0060424376203410644
+        },
+        "contrast_rel_error": {
+          "n": 3,
+          "mean": 0.10893315385380398,
+          "std": 0.0060424376203410644
+        },
+        "localization_error_m": {
+          "n": 3,
+          "mean": 0.0075843523979381815,
+          "std": 0.0003186564470294053
+        },
+        "data_residual": {
+          "n": 3,
+          "mean": 0.028007730419169444,
+          "std": 0.000780138834311899
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 0.1676185333247607,
+          "std": 0.0004178993583535932
+        }
+      },
+      "csi": {
+        "rel_l2": {
+          "n": 3,
+          "mean": 0.36619967299927486,
+          "std": 0.0035789272682312007
+        },
+        "rmse": {
+          "n": 3,
+          "mean": 0.053826292497180885,
+          "std": 0.0005260528617848598
+        },
+        "eps_r_rmse": {
+          "n": 3,
+          "mean": 0.05382629249718088,
+          "std": 0.0005260528617848605
+        },
+        "ssim": {
+          "n": 3,
+          "mean": 0.8118014846686307,
+          "std": 0.010217766059548874
+        },
+        "support_iou": {
+          "n": 3,
+          "mean": 0.8571428571428571,
+          "std": 0.0
+        },
+        "component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "true_component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "component_count_error": {
+          "n": 3,
+          "mean": 0.0,
+          "std": 0.0
+        },
+        "contrast_recovery": {
+          "n": 3,
+          "mean": 0.7666014165425038,
+          "std": 0.0039713792207480185
+        },
+        "contrast_rel_error": {
+          "n": 3,
+          "mean": 0.23339858345749612,
+          "std": 0.003971379220748018
+        },
+        "localization_error_m": {
+          "n": 3,
+          "mean": 0.0073685026540204835,
+          "std": 0.0001383360317826601
+        },
+        "data_residual": {
+          "n": 3,
+          "mean": 0.13666218891608853,
+          "std": 0.0015581477426188455
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 0.05551830000088861,
+          "std": 0.0028180132676518042
+        }
+      },
+      "das": {
+        "ssim": {
+          "n": 3,
+          "mean": 0.6288585764606526,
+          "std": 0.001378932770766263
+        },
+        "support_iou": {
+          "n": 3,
+          "mean": 0.6666666666666666,
+          "std": 0.08247860988423228
+        },
+        "localization_error_m": {
+          "n": 3,
+          "mean": 0.004731487961952604,
+          "std": 0.0034500029635859304
+        },
+        "component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "true_component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "component_count_error": {
+          "n": 3,
+          "mean": 0.0,
+          "std": 0.0
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 0.0008294666380000612,
+          "std": 3.2218206159796695e-05
+        }
+      }
+    },
+    "dual_target": {
+      "born": {
+        "rel_l2": {
+          "n": 3,
+          "mean": 0.6174659188209858,
+          "std": 0.005416312782969942
+        },
+        "rmse": {
+          "n": 3,
+          "mean": 0.1047245354834211,
+          "std": 0.0009186269605171352
+        },
+        "eps_r_rmse": {
+          "n": 3,
+          "mean": 0.10472453548342113,
+          "std": 0.0009186269605171279
+        },
+        "ssim": {
+          "n": 3,
+          "mean": 0.7789279847903529,
+          "std": 0.011668632760777327
+        },
+        "support_iou": {
+          "n": 3,
+          "mean": 0.528657616892911,
+          "std": 0.07653392826919066
+        },
+        "component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "true_component_count": {
+          "n": 3,
+          "mean": 2.0,
+          "std": 0.0
+        },
+        "component_count_error": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "contrast_recovery": {
+          "n": 3,
+          "mean": 0.7519922321496063,
+          "std": 0.010891812228624764
+        },
+        "contrast_rel_error": {
+          "n": 3,
+          "mean": 0.24800776785039377,
+          "std": 0.010891812228624762
+        },
+        "localization_error_m": {
+          "n": 3,
+          "mean": 0.003939810127851387,
+          "std": 0.002050246836695004
+        },
+        "data_residual": {
+          "n": 3,
+          "mean": 0.35830038802441394,
+          "std": 0.0029125441841551204
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 0.003233466666036596,
+          "std": 0.0001311220971021525
+        }
+      },
+      "dbim": {
+        "rel_l2": {
+          "n": 3,
+          "mean": 0.43577131899387894,
+          "std": 0.023559541092346308
+        },
+        "rmse": {
+          "n": 3,
+          "mean": 0.0739084499526238,
+          "std": 0.003995786523424044
+        },
+        "eps_r_rmse": {
+          "n": 3,
+          "mean": 0.07390844995262381,
+          "std": 0.003995786523424038
+        },
+        "ssim": {
+          "n": 3,
+          "mean": 0.8289572020205606,
+          "std": 0.016128711871683854
+        },
+        "support_iou": {
+          "n": 3,
+          "mean": 0.5606837606837606,
+          "std": 0.047372329779661625
+        },
+        "component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "true_component_count": {
+          "n": 3,
+          "mean": 2.0,
+          "std": 0.0
+        },
+        "component_count_error": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "contrast_recovery": {
+          "n": 3,
+          "mean": 0.8829262167426032,
+          "std": 0.0167805265012403
+        },
+        "contrast_rel_error": {
+          "n": 3,
+          "mean": 0.11707378325739688,
+          "std": 0.0167805265012403
+        },
+        "localization_error_m": {
+          "n": 3,
+          "mean": 0.006286999246665324,
+          "std": 0.003972382241316941
+        },
+        "data_residual": {
+          "n": 3,
+          "mean": 0.0503112875138044,
+          "std": 0.0008773128462309916
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 0.16674073333463943,
+          "std": 0.0003422388851952089
+        }
+      },
+      "csi": {
+        "rel_l2": {
+          "n": 3,
+          "mean": 0.3644690045973304,
+          "std": 0.010856168220492879
+        },
+        "rmse": {
+          "n": 3,
+          "mean": 0.06181531002948539,
+          "std": 0.0018412468435372936
+        },
+        "eps_r_rmse": {
+          "n": 3,
+          "mean": 0.06181531002948539,
+          "std": 0.001841246843537282
+        },
+        "ssim": {
+          "n": 3,
+          "mean": 0.8252122293944523,
+          "std": 0.00508539039040905
+        },
+        "support_iou": {
+          "n": 3,
+          "mean": 0.6178266178266179,
+          "std": 0.0476659860706792
+        },
+        "component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "true_component_count": {
+          "n": 3,
+          "mean": 2.0,
+          "std": 0.0
+        },
+        "component_count_error": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "contrast_recovery": {
+          "n": 3,
+          "mean": 0.7708118666962771,
+          "std": 0.00861817205232302
+        },
+        "contrast_rel_error": {
+          "n": 3,
+          "mean": 0.22918813330372292,
+          "std": 0.00861817205232302
+        },
+        "localization_error_m": {
+          "n": 3,
+          "mean": 0.005015713557504295,
+          "std": 0.002764843302747701
+        },
+        "data_residual": {
+          "n": 3,
+          "mean": 0.1753426736402557,
+          "std": 0.001483104329287905
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 0.05361113336402923,
+          "std": 9.048318101101716e-05
+        }
+      },
+      "das": {
+        "ssim": {
+          "n": 3,
+          "mean": 0.6152823772207212,
+          "std": 0.0032790468698434137
+        },
+        "support_iou": {
+          "n": 3,
+          "mean": 0.42105263157894735,
+          "std": 0.0
+        },
+        "localization_error_m": {
+          "n": 3,
+          "mean": 0.009560513854617854,
+          "std": 0.0007153104718061508
+        },
+        "component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "true_component_count": {
+          "n": 3,
+          "mean": 2.0,
+          "std": 0.0
+        },
+        "component_count_error": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 0.0008127666660584509,
+          "std": 6.222787859236938e-06
+        }
+      }
+    },
+    "heterogeneous_nested": {
+      "born": {
+        "rel_l2": {
+          "n": 3,
+          "mean": 0.5266741449387273,
+          "std": 0.00407860619078529
+        },
+        "rmse": {
+          "n": 3,
+          "mean": 0.07413734136762479,
+          "std": 0.0005741254291219001
+        },
+        "eps_r_rmse": {
+          "n": 3,
+          "mean": 0.07413734136762477,
+          "std": 0.0005741254291218939
+        },
+        "ssim": {
+          "n": 3,
+          "mean": 0.8242999333792991,
+          "std": 0.006465395685947902
+        },
+        "support_iou": {
+          "n": 3,
+          "mean": 0.923076923076923,
+          "std": 1.3597399555105182e-16
+        },
+        "component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "true_component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "component_count_error": {
+          "n": 3,
+          "mean": 0.0,
+          "std": 0.0
+        },
+        "contrast_recovery": {
+          "n": 3,
+          "mean": 0.8201121381284402,
+          "std": 0.004711517186454512
+        },
+        "contrast_rel_error": {
+          "n": 3,
+          "mean": 0.1798878618715598,
+          "std": 0.004711517186454512
+        },
+        "localization_error_m": {
+          "n": 3,
+          "mean": 0.00591292622725709,
+          "std": 0.00024119173436667224
+        },
+        "data_residual": {
+          "n": 3,
+          "mean": 0.30227571785539714,
+          "std": 0.0021021516270068566
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 0.003228000015951693,
+          "std": 0.00013131518524273078
+        }
+      },
+      "dbim": {
+        "rel_l2": {
+          "n": 3,
+          "mean": 0.41376191570217546,
+          "std": 0.027723217804259962
+        },
+        "rmse": {
+          "n": 3,
+          "mean": 0.05824323955166489,
+          "std": 0.0039024616680253927
+        },
+        "eps_r_rmse": {
+          "n": 3,
+          "mean": 0.05824323955166488,
+          "std": 0.0039024616680254
+        },
+        "ssim": {
+          "n": 3,
+          "mean": 0.8453482403918907,
+          "std": 0.0231407919322252
+        },
+        "support_iou": {
+          "n": 3,
+          "mean": 0.9444444444444443,
+          "std": 0.048112522432468836
+        },
+        "component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "true_component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "component_count_error": {
+          "n": 3,
+          "mean": 0.0,
+          "std": 0.0
+        },
+        "contrast_recovery": {
+          "n": 3,
+          "mean": 0.9538998962337769,
+          "std": 0.009661577111514899
+        },
+        "contrast_rel_error": {
+          "n": 3,
+          "mean": 0.04610010376622309,
+          "std": 0.009661577111514899
+        },
+        "localization_error_m": {
+          "n": 3,
+          "mean": 0.006344477696881364,
+          "std": 0.0018305240531850766
+        },
+        "data_residual": {
+          "n": 3,
+          "mean": 0.051148581727796884,
+          "std": 0.0012327391002037364
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 0.16559376672375947,
+          "std": 0.0004295545386593897
+        }
+      },
+      "csi": {
+        "rel_l2": {
+          "n": 3,
+          "mean": 0.37113150620895624,
+          "std": 0.00359756404739805
+        },
+        "rmse": {
+          "n": 3,
+          "mean": 0.0522423654787443,
+          "std": 0.0005064114812487655
+        },
+        "eps_r_rmse": {
+          "n": 3,
+          "mean": 0.05224236547874431,
+          "std": 0.0005064114812487632
+        },
+        "ssim": {
+          "n": 3,
+          "mean": 0.8432715947916057,
+          "std": 0.004970016437216032
+        },
+        "support_iou": {
+          "n": 3,
+          "mean": 0.923076923076923,
+          "std": 1.3597399555105182e-16
+        },
+        "component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "true_component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "component_count_error": {
+          "n": 3,
+          "mean": 0.0,
+          "std": 0.0
+        },
+        "contrast_recovery": {
+          "n": 3,
+          "mean": 0.8486571232691555,
+          "std": 0.005333270226018376
+        },
+        "contrast_rel_error": {
+          "n": 3,
+          "mean": 0.15134287673084446,
+          "std": 0.005333270226018376
+        },
+        "localization_error_m": {
+          "n": 3,
+          "mean": 0.00553139360021845,
+          "std": 0.00030487333877962663
+        },
+        "data_residual": {
+          "n": 3,
+          "mean": 0.13355437477969076,
+          "std": 0.003785703984054355
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 0.05359863334645828,
+          "std": 0.00016535299823237183
+        }
+      },
+      "das": {
+        "ssim": {
+          "n": 3,
+          "mean": 0.6491822854680785,
+          "std": 0.0035627042736333203
+        },
+        "support_iou": {
+          "n": 3,
+          "mean": 0.8461538461538461,
+          "std": 0.0
+        },
+        "localization_error_m": {
+          "n": 3,
+          "mean": 0.007699064945697813,
+          "std": 0.00017599879586131922
+        },
+        "component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "true_component_count": {
+          "n": 3,
+          "mean": 1.0,
+          "std": 0.0
+        },
+        "component_count_error": {
+          "n": 3,
+          "mean": 0.0,
+          "std": 0.0
+        },
+        "runtime_s": {
+          "n": 3,
+          "mean": 0.0008176666839669148,
+          "std": 1.0772357049814239e-05
+        }
+      }
+    }
+  },
+  "run_acceptance": {
+    "off_center/seed_0": {
+      "dbim_data_fit_better_than_born": true,
+      "csi_data_fit_better_than_born": true,
+      "das_localizes_inside_true_object": true,
+      "all_outputs_finite": true
+    },
+    "off_center/seed_1": {
+      "dbim_data_fit_better_than_born": true,
+      "csi_data_fit_better_than_born": true,
+      "das_localizes_inside_true_object": true,
+      "all_outputs_finite": true
+    },
+    "off_center/seed_2": {
+      "dbim_data_fit_better_than_born": true,
+      "csi_data_fit_better_than_born": true,
+      "das_localizes_inside_true_object": true,
+      "all_outputs_finite": true
+    },
+    "dual_target/seed_0": {
+      "dbim_data_fit_better_than_born": true,
+      "csi_data_fit_better_than_born": true,
+      "das_localizes_inside_true_object": true,
+      "all_outputs_finite": true
+    },
+    "dual_target/seed_1": {
+      "dbim_data_fit_better_than_born": true,
+      "csi_data_fit_better_than_born": true,
+      "das_localizes_inside_true_object": true,
+      "all_outputs_finite": true
+    },
+    "dual_target/seed_2": {
+      "dbim_data_fit_better_than_born": true,
+      "csi_data_fit_better_than_born": true,
+      "das_localizes_inside_true_object": true,
+      "all_outputs_finite": true
+    },
+    "heterogeneous_nested/seed_0": {
+      "dbim_data_fit_better_than_born": true,
+      "csi_data_fit_better_than_born": true,
+      "das_localizes_inside_true_object": true,
+      "all_outputs_finite": true
+    },
+    "heterogeneous_nested/seed_1": {
+      "dbim_data_fit_better_than_born": true,
+      "csi_data_fit_better_than_born": true,
+      "das_localizes_inside_true_object": true,
+      "all_outputs_finite": true
+    },
+    "heterogeneous_nested/seed_2": {
+      "dbim_data_fit_better_than_born": true,
+      "csi_data_fit_better_than_born": true,
+      "das_localizes_inside_true_object": true,
+      "all_outputs_finite": true
+    }
+  },
+  "acceptance": {
+    "all_runs_complete": true,
+    "all_numeric_metrics_finite": true,
+    "corrupted_seeds_produce_variation": true
+  }
+}
