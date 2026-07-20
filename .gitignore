@@ -30,5 +30,8 @@ phantoms/*.h5
 phantoms/*.mat
 phantoms/data/
 
+# Public measured datasets (download through the documented benchmark drivers)
+data/external/
+
 # pytest temp cache
 pytest-cache-files-*/

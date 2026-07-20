@@ -94,13 +94,19 @@ class DataSource(ABC):
     """Ingest synthetic or real measurements into a shared downstream schema.
 
     Phase 1 provides :class:`mwisim.data.SyntheticDataSource`, including controlled
-    complex noise and true-versus-assumed receiver geometry. Real-data ingest and its
-    calibration metadata are Phase-2 work.
+    complex noise and true-versus-assumed receiver geometry. Phase 2 introduces the
+    axis-aware :class:`mwisim.data.MeasurementSet` for measured S-parameters, geometry,
+    metadata, and provenance.
     """
 
     @abstractmethod
     def measurements(self, **kwargs):
-        """Return a dict: fields/S-params, tx/rx geometry, frequencies, calibration meta."""
+        """Return data in the source's documented schema.
+
+        Measured-data sources return :class:`mwisim.data.MeasurementSet`. The legacy
+        Phase-1 synthetic source keeps returning its inversion-ready problem dict until
+        the synthetic and measured acquisition APIs are unified in a later milestone.
+        """
         ...
 
 
@@ -112,7 +118,7 @@ class Preprocessor(ABC):
 
     @abstractmethod
     def apply(self, data, **kwargs):
-        """Return processed ``data`` in the same schema."""
+        """Return processed ``data`` in the same schema, with provenance appended."""
         ...
 
 

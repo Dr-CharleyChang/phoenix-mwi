@@ -5,6 +5,12 @@ Importing this package registers the built-in evaluators.
 from __future__ import annotations
 
 from .metrics import RelL2Evaluator
+from .measured import (
+    frequency_to_time,
+    relative_l2,
+    reproduce_um_bmid_reference_example,
+    um_bmid_iczt_reference,
+)
 from .image_metrics import (
     ImageMetricsEvaluator,
     rmse,
@@ -27,6 +33,10 @@ from .hardening import (
 
 __all__ = [
     "RelL2Evaluator",
+    "frequency_to_time",
+    "relative_l2",
+    "reproduce_um_bmid_reference_example",
+    "um_bmid_iczt_reference",
     "ImageMetricsEvaluator",
     "rmse",
     "eps_r_rmse",
