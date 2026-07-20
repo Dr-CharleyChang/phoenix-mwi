@@ -1477,3 +1477,35 @@ Two separate things: (1) a real bug — `convergence_study` had `k_1 = f/lam0·�
 ---
 
 *Appendix G — session FAQ (pairs with Appendix A). The former Appendix F was merged into Appendix E on 2026-06-20.*
+
+---
+
+## Appendix H — Phase 2 measured-data entrance
+
+Phase 1's synthetic inversion dictionary and Phase 2's real measurement record are intentionally different at this stage. The synthetic dictionary already assumes Phoenix's 2-D plane-wave model and contains `d`, `E_inc`, `G_tr`, and the inversion grid. A real VNA file does not justify those assumptions merely because it contains complex numbers; it first enters as a neutral `MeasurementSet` with named axes, physical coordinates, geometry, metadata, and provenance.
+
+The new file path is:
+
+```text
+mwisim/data/schema.py
+    MeasurementSet + AuxiliaryArray + safe NPZ
+            ↓
+mwisim/data/um_bmid.py
+    verified UM-BMID ingest + canonical metadata + geometry
+            ↓
+mwisim/preprocessing/calibration.py
+    ComplexGainCalibrator + ReferenceSubtract
+            ↓
+mwisim/preprocessing/pipeline.py
+    ordered Preprocessor composition
+            ↓
+mwisim/evaluation/measured.py
+    inverse Fourier/ICZT + independent numerical reference
+            ↓
+scripts/run_p2_um_bmid.py
+    public measured workflow → JSON + sinogram
+```
+
+The complete school-math-to-code explanation, arithmetic examples, security boundary, pseudocode, benchmark numbers, and next-step boundary are in [P2_Tutorial_Measured-Data-from-zero-to-100.md](P2_Tutorial_Measured-Data-from-zero-to-100.md). The exact axis/storage contract is in [P2_Measurement_Schema_Reference.md](P2_Measurement_Schema_Reference.md).
+
+The durable rule is: **ingest first without changing physics, preprocess with explicit named operations, and attach an imager/inverter only after its acquisition-model assumptions are declared.** This is why `UMBMIDDataSource` does not feed UM-BMID S11 directly into the existing plane-wave Born/DBIM/CSI code.
