@@ -7,10 +7,13 @@ from .calibration import (
     estimate_complex_gain,
 )
 from .pipeline import PreprocessingPipeline
+from .artifacts import AngularMeanSubtract, LowRankClutterFilter
 
 __all__ = [
     "ComplexGainCalibrator",
     "ReferenceSubtract",
     "estimate_complex_gain",
     "PreprocessingPipeline",
+    "AngularMeanSubtract",
+    "LowRankClutterFilter",
 ]

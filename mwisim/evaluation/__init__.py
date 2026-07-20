@@ -30,6 +30,23 @@ from .hardening import (
     aggregate_seed_statistics,
     run_hardening_suite,
 )
+from .measured_imaging import (
+    aggregate_measured_metrics,
+    circular_mask,
+    localization_error_m,
+    measured_image_metrics,
+    peak_location_m,
+    signal_to_clutter_ratio_db,
+)
+from .measured_benchmark import (
+    DEFAULT_P2B_CALIBRATION_IDS,
+    DEFAULT_P2B_EVALUATION_IDS,
+    DEFAULT_P2B_SPEEDS_M_S,
+    artifact_ablation_records,
+    reference_subtracted_targets,
+    run_p2b_benchmark,
+    speed_sensitivity,
+)
 
 __all__ = [
     "RelL2Evaluator",
@@ -54,4 +71,17 @@ __all__ = [
     "result_rows",
     "aggregate_seed_statistics",
     "run_hardening_suite",
+    "aggregate_measured_metrics",
+    "circular_mask",
+    "localization_error_m",
+    "measured_image_metrics",
+    "peak_location_m",
+    "signal_to_clutter_ratio_db",
+    "DEFAULT_P2B_CALIBRATION_IDS",
+    "DEFAULT_P2B_EVALUATION_IDS",
+    "DEFAULT_P2B_SPEEDS_M_S",
+    "artifact_ablation_records",
+    "reference_subtracted_targets",
+    "run_p2b_benchmark",
+    "speed_sensitivity",
 ]
